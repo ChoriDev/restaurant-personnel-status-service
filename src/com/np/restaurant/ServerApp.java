@@ -1,77 +1,82 @@
 package com.np.restaurant;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 import com.np.restaurant.user.User;
 
 public class ServerApp {
-    public static void main(String[] args) throws Exception {
-        ServerApp serverApp = new ServerApp();
-        serverApp.startApp();
+    private static List<User> loggedInUsers = new ArrayList<>();
+
+    public static void main(String[] args) {
+        try (ServerSocket serverSocket = new ServerSocket(10001)) {
+            System.out.println("서버가 시작되었습니다. 클라이언트의 접속을 기다립니다...");
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("새로운 클라이언트가 접속했습니다.");
+                new ClientThread(clientSocket).start();
+            }
+        } catch (IOException e) {
+            System.err.println("서버 오류: " + e.getMessage());
+        }
     }
 
-    private void startApp() {
-        try {
-            ServerSocket server = new ServerSocket(10001);
-            System.out.println("접속을 기다립니다.");
-            while (true) {
-                Socket sock = server.accept();
-                UserThread userThread = new UserThread(sock);
-                userThread.start();
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+    static synchronized void addUser(User user) {
+        loggedInUsers.add(user);
+        System.out.println("새로운 사용자가 로그인했습니다: " + user.getName());
+    }
+
+    static synchronized void removeUser(User user) {
+        loggedInUsers.remove(user);
+        System.out.println("사용자가 로그아웃했습니다: " + user.getName());
+    }
+
+    static synchronized List<User> getLoggedInUsers() {
+        return new ArrayList<>(loggedInUsers);
     }
 }
 
-class UserThread extends Thread {
-    private Socket socket;
-    private BufferedReader br;
-    private PrintWriter pw;
+class ClientThread extends Thread {
+    private Socket clientSocket;
+    private BufferedReader reader;
+    private ObjectOutputStream objectOutputStream;
 
-    public UserThread(Socket socket) {
-        this.socket = socket;
-
+    public ClientThread(Socket clientSocket) {
+        this.clientSocket = clientSocket;
         try {
-            pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-            br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        } catch (Exception e) {
-            System.err.println(e);
+            reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+        } catch (IOException e) {
+            System.err.println("클라이언트 핸들러 초기화 오류: " + e.getMessage());
         }
     }
 
     @Override
     public void run() {
-        System.out.println("새로운 사용자가 로그인을 시도합니다.");
-        login();
+        try {
+            String username = reader.readLine();
+            System.out.println("클라이언트에서 받은 사용자 이름: " + username);
+            User user = new User(username);
+            ServerApp.addUser(user); // 사용자 추가
+            sendUserObject(user);
+        } catch (IOException e) {
+            System.err.println("클라이언트와의 통신 오류: " + e.getMessage());
+        } finally {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                System.err.println("클라이언트 소켓 종료 오류: " + e.getMessage());
+            }
+        }
     }
 
-    public void login() {
-        String name = null;
+    private void sendUserObject(User user) {
         try {
-            name = br.readLine();
+            objectOutputStream.writeObject(user);
+            objectOutputStream.flush();
         } catch (IOException e) {
-            System.err.println(e);
-        }
-        ObjectOutputStream oos = null;
-        try {
-            oos = new ObjectOutputStream(socket.getOutputStream());
-        } catch (Exception e) {
-            System.err.println(e);
-        }
-        User user = new User(name);
-        try {
-            oos.writeObject(user);
-        } catch (IOException e) {
-            System.err.println(e);
+            System.err.println("사용자 객체 전송 오류: " + e.getMessage());
         }
     }
 }

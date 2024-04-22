@@ -1,64 +1,40 @@
 package com.np.restaurant;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 
 import com.np.restaurant.user.User;
 
 public class ClientApp {
-    Socket socket = null;
-    // 소켓에 쓰는 PrintWriter
-    PrintWriter pw = null;
-    // 소켓에서 읽는 BufferedReader
-    BufferedReader br = null;
-    // 앱 실행 동안 사용할 keyboard 입력
-    BufferedReader keyboard = null;
+    private Socket socket;
+    private BufferedReader keyboard;
+    private PrintWriter writer;
+    private BufferedReader reader;
 
     public ClientApp() {
         try {
             socket = new Socket("localhost", 10001);
-            pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-            br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             keyboard = new BufferedReader(new InputStreamReader(System.in));
-        } catch (Exception e) {
-            System.err.println(e);
+            writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        } catch (IOException e) {
+            System.err.println("클라이언트 초기화 오류: " + e.getMessage());
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        ClientApp clientApp = new ClientApp();
-        clientApp.startApp();
-    }
-
-    private void startApp() {
+    public void start() {
         System.out.println("음식점 인원 현황 서비스입니다.");
         User user = login();
         if (user != null) {
             System.out.println(user.getName() + "님 반갑습니다.");
-            System.out.println("사용할 수 있는 메뉴를 보려면 \'전체 메뉴\'을 입력해주세요.");
-            String selectedMenu = null;
+            System.out.println("사용할 수 있는 메뉴를 보려면 '전체 메뉴'를 입력해주세요.");
+            String selectedMenu;
             while (true) {
                 try {
                     selectedMenu = keyboard.readLine();
+                    processMenuSelection(selectedMenu);
                 } catch (IOException e) {
-                    System.out.println("올바른 메뉴를 입력해주세요.");
-                    System.err.println(e);
-                }
-                switch (selectedMenu) {
-                    case "전체 메뉴":
-                        printAllMenus();
-                        break;
-                    case "종료":
-                        terminateApp();
-                        break;
-                    default:
-                        System.err.println("없는 메뉴입니다.");
-                        break;
+                    System.err.println("입력 오류: " + e.getMessage());
                 }
             }
         } else {
@@ -67,57 +43,67 @@ public class ClientApp {
     }
 
     private User login() {
-        String name = null;
         System.out.print("사용자의 이름을 알려주세요: ");
-        ObjectInputStream ois = null;
+        String name = "";
         try {
-            while (true) {
-                if (!((name = keyboard.readLine()).equals(""))) {
-                    break;
+            while (name.isEmpty()) {
+                name = keyboard.readLine();
+                if (name.trim().isEmpty()) {
+                    System.out.print("이름을 다시 입력해주세요: ");
                 }
-                System.out.print("이름을 다시 입력해주세요: ");
             }
-            pw.println(name);
-            pw.flush();
-        } catch (Exception e) {
-            System.err.println(e);
-        }
-        if (name.equals("종료")) {
+            writer.println(name);
+            writer.flush();
+            return receiveUserObject();
+        } catch (IOException e) {
+            System.err.println("로그인 오류: " + e.getMessage());
             return null;
-        } else {
-            User user = null;
-            try {
-                ois = new ObjectInputStream(socket.getInputStream());
-            } catch (Exception e) {
-                System.err.println(e);
-            }
-            try {
-                user = (User) ois.readObject();
-            } catch (Exception e) {
-                System.err.println(e);
-            }
-            try {
-                ois.close();
-            } catch (Exception e) {
-                System.err.println(e);
-            }
-            return user;
+        }
+    }
+
+    private User receiveUserObject() {
+        try {
+            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+            return (User) objectInputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("사용자 객체 수신 오류: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private void processMenuSelection(String selectedMenu) {
+        switch (selectedMenu) {
+            case "전체 메뉴":
+                printAllMenus();
+                break;
+            case "종료":
+                terminateApp();
+                break;
+            default:
+                System.out.println("없는 메뉴입니다.");
+                break;
         }
     }
 
     private void printAllMenus() {
-        // System.out.println("이용할 수 있는 서비스: ");
+        // 메뉴 출력 구현
     }
 
     private void terminateApp() {
         try {
-            pw.close();
-            br.close();
+            socket.close();
+            writer.close();
+            reader.close();
             keyboard.close();
-        } catch (Exception e) {
-            System.err.println(e);
+        } catch (IOException e) {
+            System.err.println("애플리케이션 종료 오류: " + e.getMessage());
         }
         System.out.println("이용해주셔서 고맙습니다.");
         System.exit(0);
+    }
+
+    public static void main(String[] args) {
+        ClientApp client = new ClientApp();
+        client.start();
     }
 }
