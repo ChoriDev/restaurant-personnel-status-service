@@ -18,18 +18,37 @@ public class ClientChat {
         System.out.println("다른 사람에게 메시지를 보냅니다.");
         try {
             String line = null;
-            String echo = null;
+            InputThread inputThread = new InputThread(reader);
+            inputThread.start();
             while ((line = keyboard.readLine()) != null) {
                 writer.println(line);
                 writer.flush();
                 if (line.equals("quit")) {
                     break;
                 }
-                echo = reader.readLine();
-                System.out.println("받은 메시지: " + echo);
             }
         } catch (Exception e) {
             System.out.println(e);
+        }
+    }
+}
+
+class InputThread extends Thread {
+    private BufferedReader reader = null;
+
+    public InputThread(BufferedReader reader) {
+        this.reader = reader;
+    }
+
+    @Override
+    public void run() {
+        try {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (Exception e) {
+            System.err.println(e);
         }
     }
 }

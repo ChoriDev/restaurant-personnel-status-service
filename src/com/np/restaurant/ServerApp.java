@@ -8,7 +8,8 @@ import com.np.restaurant.chatting.ServerChat;
 import com.np.restaurant.user.User;
 
 public class ServerApp {
-    private static List<User> loggedInUsers = new ArrayList<>();
+    private static List<User> loggedInUsers = new ArrayList<User>();
+    private static HashMap<User, PrintWriter> chattingUsers = new HashMap<User, PrintWriter>();
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(10001)) {
@@ -24,18 +25,32 @@ public class ServerApp {
         }
     }
 
-    static synchronized void addUser(User user) {
+    public static synchronized void addUser(User user) {
         loggedInUsers.add(user);
         System.out.println("새로운 사용자가 로그인했습니다: " + user.getName());
     }
 
-    static synchronized void removeUser(User user) {
+    public static synchronized void removeUser(User user) {
         loggedInUsers.remove(user);
         System.out.println("사용자가 로그아웃했습니다: " + user.getName());
     }
 
-    static synchronized List<User> getLoggedInUsers() {
-        return new ArrayList<>(loggedInUsers);
+    public static synchronized List<User> getLoggedInUsers() {
+        return new ArrayList<User>(loggedInUsers);
+    }
+
+    public static synchronized void addChattingUser(User user, PrintWriter writer) {
+        chattingUsers.put(user, writer);
+        System.out.println("새로운 사용자가 채팅방에 참여합니다: " + user.getName());
+    }
+
+    public static synchronized void removeChattingUser(User user) {
+        chattingUsers.remove(user);
+        System.out.println("사용자가 채팅방을 나갔습니다: " + user.getName());
+    }
+
+    public static synchronized HashMap<User, PrintWriter> getChattingUsers() {
+        return new HashMap<User, PrintWriter>(chattingUsers);
     }
 }
 
@@ -44,6 +59,7 @@ class ClientThread extends Thread {
     private BufferedReader reader;
     private PrintWriter writer;
     private ObjectOutputStream objectOutputStream;
+    private User user;
 
     public ClientThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -52,7 +68,7 @@ class ClientThread extends Thread {
             writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
             objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
         } catch (IOException e) {
-            System.err.println("클라이언트 핸들러 초기화 오류: " + e.getMessage());
+            System.err.println("클라이언트 초기화 오류: " + e.getMessage());
         }
     }
 
@@ -99,7 +115,7 @@ class ClientThread extends Thread {
         try {
             String username = reader.readLine();
             System.out.println("클라이언트에서 받은 사용자 이름: " + username);
-            User user = new User(username);
+            this.user = new User(username);
             ServerApp.addUser(user); // 사용자 추가
             objectOutputStream.writeObject(user);
             objectOutputStream.flush();
@@ -110,8 +126,10 @@ class ClientThread extends Thread {
     }
 
     private void chat() {
-        ServerChat serverChat = new ServerChat(reader, writer);
+        ServerApp.addChattingUser(user, writer);
+        ServerChat serverChat = new ServerChat(user, reader);
         serverChat.start();
+        ServerApp.removeChattingUser(user);
     }
 
     private void terminateApp() {
