@@ -3,7 +3,7 @@ package com.np.restaurant;
 import java.io.*;
 import java.net.*;
 
-import com.np.restaurant.chatting.ChatClient;
+import com.np.restaurant.chatting.ClientChat;
 import com.np.restaurant.user.User;
 
 public class ClientApp {
@@ -108,8 +108,8 @@ public class ClientApp {
     }
 
     private void chat() {
-        ChatClient chatClient = new ChatClient(reader, writer, keyboard);
-        chatClient.start();
+        ClientChat clientChat = new ClientChat(reader, writer, keyboard);
+        clientChat.start();
     }
 
     private void terminateApp() {

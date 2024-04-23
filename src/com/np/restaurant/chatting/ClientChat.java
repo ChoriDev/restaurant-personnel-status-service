@@ -3,25 +3,26 @@ package com.np.restaurant.chatting;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 
-public class ChatServer {
+public class ClientChat {
     private BufferedReader reader;
     private PrintWriter writer;
+    private BufferedReader keyboard;
 
-    public ChatServer(BufferedReader reader, PrintWriter writer) {
+    public ClientChat(BufferedReader reader, PrintWriter writer, BufferedReader keyboard) {
         this.reader = reader;
         this.writer = writer;
+        this.keyboard = keyboard;
     }
 
     public void start() {
         try {
             String line = null;
-            while ((line = reader.readLine()) != null) {
-                if (line.equals("quit")) {
-                    break;
-                }
-                System.out.println("클라이언트가 보낸 메시지: " + line);
+            String echo = null;
+            while ((line = keyboard.readLine()) != null) {
                 writer.println(line);
                 writer.flush();
+                echo = reader.readLine();
+                System.out.println("서버에게 받은 메시지: " + echo);
             }
         } catch (Exception e) {
             System.out.println(e);

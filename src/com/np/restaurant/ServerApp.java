@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import com.np.restaurant.chatting.ChatServer;
+import com.np.restaurant.chatting.ServerChat;
 import com.np.restaurant.user.User;
 
 public class ServerApp {
@@ -109,8 +109,8 @@ class ClientThread extends Thread {
     }
 
     private void chat() {
-        ChatServer chatServer = new ChatServer(reader, writer);
-        chatServer.start();
+        ServerChat serverChat = new ServerChat(reader, writer);
+        serverChat.start();
     }
 
     private void terminateApp() {
