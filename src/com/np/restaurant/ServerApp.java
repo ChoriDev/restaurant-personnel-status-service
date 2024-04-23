@@ -83,9 +83,13 @@ class ClientThread extends Thread {
                         login();
                         break;
                     case 1:
-                        // 현황 조회
+                        // 로그아웃
+                        logout();
                         break;
                     case 2:
+                        // 현황 조회
+                        break;
+                    case 3:
                         // 채팅
                         chat();
                         break;
@@ -122,6 +126,17 @@ class ClientThread extends Thread {
             objectOutputStream.reset();
         } catch (IOException e) {
             System.err.println("사용자 객체 전송 오류: " + e.getMessage());
+        }
+    }
+
+    private void logout() {
+        try {
+            ServerApp.removeUser(user);
+            user = null;
+            writer.println("success");
+            writer.flush();
+        } catch (Exception e) {
+            System.err.println("로그아웃 오류: " + e.getMessage());
         }
     }
 

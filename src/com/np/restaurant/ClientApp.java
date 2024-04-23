@@ -52,9 +52,17 @@ public class ClientApp {
                     System.out.println("이미 로그인되어 있습니다.");
                 }
                 break;
-            case "현황 조회":
+            case "로그아웃":
                 if (user != null) {
                     sendCommand(1);
+                    logout();
+                } else {
+                    System.out.println("로그인 후 이용할 수 있습니다.");
+                }
+                break;
+            case "현황 조회":
+                if (user != null) {
+                    sendCommand(2);
                     // 현황 조회 메소드
                 } else {
                     System.out.println("로그인 후 이용할 수 있습니다.");
@@ -62,7 +70,7 @@ public class ClientApp {
                 break;
             case "채팅":
                 if (user != null) {
-                    sendCommand(2);
+                    sendCommand(3);
                     chat();
                 } else {
                     System.out.println("로그인 후 이용할 수 있습니다.");
@@ -117,6 +125,20 @@ public class ClientApp {
         }
     }
 
+    // TODO 채팅 후에 로그아웃 안되는 버그 존재
+    public void logout() {
+        try {
+            // TODO 서버의 첫 메시지 이슈 해결 후 contains 대신 equals로 바꾸기
+            if ((reader.readLine()).contains("success")) {
+                user = null;
+                System.out.println("로그아웃되었습니다.");
+            }
+        } catch (Exception e) {
+            System.err.println("로그아웃 오류: " + e.getMessage());
+        }
+    }
+
+    // TODO 서버의 첫 메시지에 이상한 문자가 붙는 이슈 발생
     private void chat() {
         ClientChat clientChat = new ClientChat(reader, writer, keyboard);
         clientChat.start();
