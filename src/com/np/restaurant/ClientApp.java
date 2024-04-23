@@ -43,8 +43,12 @@ public class ClientApp {
                 printAllCommands();
                 break;
             case "로그인":
-                sendCommand(0);
-                login();
+                if (user == null) {
+                    sendCommand(0);
+                    login();
+                } else {
+                    System.out.println("이미 로그인되어 있습니다.");
+                }
                 break;
             case "현황 조회":
                 sendCommand(1);
