@@ -76,6 +76,10 @@ public class ClientApp {
             case "전체 메뉴":
                 printAllMenus();
                 break;
+            case "현황 조회":
+                break;
+            case "채팅":
+                break;
             case "종료":
                 terminateApp();
                 break;
@@ -86,7 +90,7 @@ public class ClientApp {
     }
 
     private void printAllMenus() {
-        // 메뉴 출력 구현
+        System.out.println("사용할 수 있는 기능은 '현황 조회'와 '채팅', '종료'입니다.");
     }
 
     private void terminateApp() {
