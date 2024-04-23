@@ -15,14 +15,18 @@ public class ClientChat {
     }
 
     public void start() {
+        System.out.println("다른 사람에게 메시지를 보냅니다.");
         try {
             String line = null;
             String echo = null;
             while ((line = keyboard.readLine()) != null) {
                 writer.println(line);
                 writer.flush();
+                if (line.equals("quit")) {
+                    break;
+                }
                 echo = reader.readLine();
-                System.out.println("서버에게 받은 메시지: " + echo);
+                System.out.println("받은 메시지: " + echo);
             }
         } catch (Exception e) {
             System.out.println(e);

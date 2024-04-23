@@ -15,7 +15,8 @@ public class ServerApp {
             System.out.println("서버가 시작되었습니다. 클라이언트의 접속을 기다립니다...");
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("새로운 클라이언트가 접속했습니다.");
+                InetAddress inetAddress = clientSocket.getInetAddress();
+                System.out.println(inetAddress.getHostAddress() + "에서 클라이언트가 접속했습니다.");
                 new ClientThread(clientSocket).start();
             }
         } catch (IOException e) {
@@ -122,6 +123,6 @@ class ClientThread extends Thread {
         } catch (IOException e) {
             System.err.println("애플리케이션 종료 오류: " + e.getMessage());
         }
-        System.out.println("이용해주셔서 고맙습니다.");
+        System.out.println(clientSocket.getInetAddress().getHostAddress() + "에서 클라이언트가 떠났습니다.");
     }
 }

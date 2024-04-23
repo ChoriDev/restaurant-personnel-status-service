@@ -9,6 +9,7 @@ import com.np.restaurant.user.User;
 public class ClientApp {
     private Socket socket;
     private BufferedReader reader;
+    private ObjectInputStream objectInputStream;
     private PrintWriter writer;
     private BufferedReader keyboard;
     private User user;
@@ -17,6 +18,7 @@ public class ClientApp {
         try {
             socket = new Socket("localhost", 10001);
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
             writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
             keyboard = new BufferedReader(new InputStreamReader(System.in));
         } catch (IOException e) {
@@ -51,11 +53,20 @@ public class ClientApp {
                 }
                 break;
             case "현황 조회":
-                sendCommand(1);
+                if (user != null) {
+                    sendCommand(1);
+                    // 현황 조회 메소드
+                } else {
+                    System.out.println("로그인 후 이용할 수 있습니다.");
+                }
                 break;
             case "채팅":
-                sendCommand(2);
-                chat();
+                if (user != null) {
+                    sendCommand(2);
+                    chat();
+                } else {
+                    System.out.println("로그인 후 이용할 수 있습니다.");
+                }
                 break;
             case "종료":
                 sendCommand(-1);
@@ -94,7 +105,6 @@ public class ClientApp {
             writer.println(name);
             writer.flush();
             try {
-                ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 this.user = (User) objectInputStream.readObject();
                 System.out.println(user.getName() + "님 반갑습니다.");
             } catch (IOException | ClassNotFoundException e) {
@@ -115,8 +125,9 @@ public class ClientApp {
     private void terminateApp() {
         try {
             socket.close();
-            writer.close();
             reader.close();
+            objectInputStream.close();
+            writer.close();
             keyboard.close();
         } catch (IOException e) {
             System.err.println("애플리케이션 종료 오류: " + e.getMessage());
