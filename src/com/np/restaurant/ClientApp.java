@@ -10,6 +10,7 @@ public class ClientApp {
     private BufferedReader keyboard;
     private PrintWriter writer;
     private BufferedReader reader;
+    private User user;
 
     public ClientApp() {
         try {
@@ -24,25 +25,57 @@ public class ClientApp {
 
     public void start() {
         System.out.println("음식점 인원 현황 서비스입니다.");
-        User user = login();
-        if (user != null) {
-            System.out.println(user.getName() + "님 반갑습니다.");
-            System.out.println("사용할 수 있는 메뉴를 보려면 '전체 메뉴'를 입력해주세요.");
-            String selectedMenu;
-            while (true) {
-                try {
-                    selectedMenu = keyboard.readLine();
-                    processMenuSelection(selectedMenu);
-                } catch (IOException e) {
-                    System.err.println("입력 오류: " + e.getMessage());
-                }
+        System.out.println("사용할 수 있는 기능을 보려면 '전체 기능'를 입력해주세요.");
+        while (true) {
+            try {
+                String command = keyboard.readLine();
+                commandSelection(command);
+            } catch (IOException e) {
+                System.err.println("입력 오류: " + e.getMessage());
             }
-        } else {
-            terminateApp();
         }
     }
 
-    private User login() {
+    private void commandSelection(String selectedCommand) {
+        switch (selectedCommand) {
+            case "전체 기능":
+                printAllCommands();
+                break;
+            case "로그인":
+                sendCommand(0);
+                login();
+                break;
+            case "현황 조회":
+                sendCommand(1);
+                break;
+            case "채팅":
+                sendCommand(2);
+                break;
+            case "종료":
+                sendCommand(-1);
+                terminateApp();
+                break;
+            default:
+                System.out.println("없는 기능입니다.");
+                break;
+        }
+    }
+
+    private void sendCommand(int commandNumber) {
+        try {
+            writer.println(commandNumber);
+            writer.flush();
+        } catch (Exception e) {
+            System.err.println("명령어 전송 오류: " + e.getMessage());
+        }
+    }
+
+    private void printAllCommands() {
+        System.out.println("사용할 수 있는 기능");
+        System.out.println("로그인, 현황 조회, 채팅, 종료");
+    }
+
+    private void login() {
         System.out.print("사용자의 이름을 알려주세요: ");
         String name = "";
         try {
@@ -54,43 +87,18 @@ public class ClientApp {
             }
             writer.println(name);
             writer.flush();
-            return receiveUserObject();
+            try {
+                ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+                this.user = (User) objectInputStream.readObject();
+                System.out.println(user.getName() + "님 반갑습니다.");
+            } catch (IOException | ClassNotFoundException e) {
+                System.err.println("사용자 객체 수신 오류: " + e.getMessage());
+                System.out.println("로그인에 실패했습니다.");
+            }
         } catch (IOException e) {
             System.err.println("로그인 오류: " + e.getMessage());
-            return null;
+            System.out.println("로그인에 실패했습니다.");
         }
-    }
-
-    private User receiveUserObject() {
-        try {
-            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-            return (User) objectInputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("사용자 객체 수신 오류: " + e.getMessage());
-            return null;
-        }
-    }
-
-    private void processMenuSelection(String selectedMenu) {
-        switch (selectedMenu) {
-            case "전체 메뉴":
-                printAllMenus();
-                break;
-            case "현황 조회":
-                break;
-            case "채팅":
-                break;
-            case "종료":
-                terminateApp();
-                break;
-            default:
-                System.out.println("없는 메뉴입니다.");
-                break;
-        }
-    }
-
-    private void printAllMenus() {
-        System.out.println("사용할 수 있는 기능은 '현황 조회'와 '채팅', '종료'입니다.");
     }
 
     private void terminateApp() {

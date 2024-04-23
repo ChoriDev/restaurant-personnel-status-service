@@ -52,14 +52,50 @@ class ClientThread extends Thread {
         }
     }
 
+    /*
+     * @Override
+     * public void run() {
+     * try {
+     * String username = reader.readLine();
+     * System.out.println("클라이언트에서 받은 사용자 이름: " + username);
+     * User user = new User(username);
+     * ServerApp.addUser(user); // 사용자 추가
+     * sendUserObject(user);
+     * } catch (IOException e) {
+     * System.err.println("클라이언트와의 통신 오류: " + e.getMessage());
+     * } finally {
+     * try {
+     * clientSocket.close();
+     * } catch (IOException e) {
+     * System.err.println("클라이언트 소켓 종료 오류: " + e.getMessage());
+     * }
+     * }
+     * }
+     */
+
     @Override
     public void run() {
         try {
-            String username = reader.readLine();
-            System.out.println("클라이언트에서 받은 사용자 이름: " + username);
-            User user = new User(username);
-            ServerApp.addUser(user); // 사용자 추가
-            sendUserObject(user);
+            int command = Integer.parseInt(reader.readLine());
+            while (command != -1) {
+                switch (command) {
+                    case 0:
+                        // 로그인
+                        login();
+                        break;
+                    case 1:
+                        // 현황 조회
+                        break;
+                    case 2:
+                        // 채팅
+                        break;
+                    case -1:
+                        // 종료
+                        break;
+                    default:
+                        break;
+                }
+            }
         } catch (IOException e) {
             System.err.println("클라이언트와의 통신 오류: " + e.getMessage());
         } finally {
@@ -71,8 +107,12 @@ class ClientThread extends Thread {
         }
     }
 
-    private void sendUserObject(User user) {
+    private void login() {
         try {
+            String username = reader.readLine();
+            System.out.println("클라이언트에서 받은 사용자 이름: " + username);
+            User user = new User(username);
+            ServerApp.addUser(user); // 사용자 추가
             objectOutputStream.writeObject(user);
             objectOutputStream.flush();
         } catch (IOException e) {
