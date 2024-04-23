@@ -34,6 +34,7 @@ public class ServerChat {
     }
 
     public void broadcast(String msg) {
+        // TODO HashMap을 ServerApp에서 직접 받지 않고 사용하는 방법 생각해보기
         HashMap<User, PrintWriter> chattingUsers = ServerApp.getChattingUsers();
         synchronized (chattingUsers) {
             Collection collection = chattingUsers.values();
