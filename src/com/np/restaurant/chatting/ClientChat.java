@@ -24,6 +24,7 @@ public class ClientChat {
                 writer.println(line);
                 writer.flush();
                 if (line.equals("quit")) {
+                    inputThread.interrupt();
                     break;
                 }
             }
@@ -43,9 +44,13 @@ class InputThread extends Thread {
     @Override
     public void run() {
         try {
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
+            while (!Thread.currentThread().isInterrupted()) {
+                if (reader.ready()) { // 입력이 준비되었는지 확인
+                    String line = reader.readLine();
+                    if (line != null) {
+                        System.out.println(line);
+                    }
+                }
             }
         } catch (Exception e) {
             System.err.println(e);

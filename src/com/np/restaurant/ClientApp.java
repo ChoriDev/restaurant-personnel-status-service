@@ -128,7 +128,6 @@ public class ClientApp {
     public void logout() {
         try {
             // TODO 서버의 첫 메시지 이슈 해결 후 contains 대신 equals로 바꾸기
-            // TODO 로그인 직후 로그아웃은 잘 되지만 채팅 후에 로그아웃이 안되는 버그 존재
             if ((reader.readLine()).contains("success")) {
                 user = null;
                 System.out.println("로그아웃되었습니다.");
