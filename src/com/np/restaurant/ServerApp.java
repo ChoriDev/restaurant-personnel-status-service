@@ -5,6 +5,7 @@ import java.net.*;
 import java.util.*;
 
 import com.np.restaurant.chatting.ServerChat;
+import com.np.restaurant.restaurants.Restaurants;
 import com.np.restaurant.user.User;
 
 public class ServerApp {
@@ -87,7 +88,8 @@ class ClientThread extends Thread {
                         logout();
                         break;
                     case 2:
-                        // 현황 조회
+                        // 음식점 조회
+                        showRestaurants();
                         break;
                     case 3:
                         // 채팅
@@ -145,6 +147,17 @@ class ClientThread extends Thread {
         ServerChat serverChat = new ServerChat(user, reader);
         serverChat.start();
         ServerApp.removeChattingUser(user);
+    }
+
+    private void showRestaurants() {
+        Restaurants restaurants = new Restaurants();
+        try {
+            objectOutputStream.writeObject(restaurants);
+            objectOutputStream.flush();
+            objectOutputStream.reset();
+        } catch (Exception e) {
+            System.err.println(e);
+        }
     }
 
     private void terminateApp() {

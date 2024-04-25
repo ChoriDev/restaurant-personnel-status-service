@@ -2,8 +2,10 @@ package com.np.restaurant;
 
 import java.io.*;
 import java.net.*;
+import java.util.List;
 
 import com.np.restaurant.chatting.ClientChat;
+import com.np.restaurant.restaurants.Restaurants;
 import com.np.restaurant.user.User;
 
 public class ClientApp {
@@ -60,10 +62,10 @@ public class ClientApp {
                     System.out.println("로그인 후 이용할 수 있습니다.");
                 }
                 break;
-            case "현황 조회":
+            case "음식점 조회":
                 if (user != null) {
                     sendCommand(2);
-                    // 현황 조회 메소드
+                    showRestaurants();
                 } else {
                     System.out.println("로그인 후 이용할 수 있습니다.");
                 }
@@ -97,7 +99,7 @@ public class ClientApp {
 
     private void printAllCommands() {
         System.out.println("사용할 수 있는 기능");
-        System.out.println("로그인, 현황 조회, 채팅, 종료");
+        System.out.println("로그인, 음식점 조회, 채팅, 종료");
     }
 
     private void login() {
@@ -141,6 +143,18 @@ public class ClientApp {
     private void chat() {
         ClientChat clientChat = new ClientChat(reader, writer, keyboard);
         clientChat.start();
+    }
+
+    private void showRestaurants() {
+        try {
+            Restaurants restaurants = (Restaurants) objectInputStream.readObject();
+            List<List<String>> restaurantList = restaurants.getRestaurants();
+            for (List<String> restaurant : restaurantList) {
+                System.out.println(restaurant);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("음식점 객체 수신 오류: " + e.getMessage());
+        }
     }
 
     private void terminateApp() {
