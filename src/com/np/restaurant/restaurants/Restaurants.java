@@ -5,27 +5,28 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Restaurants implements Serializable {
-    private List<List<String>> restaurants;
-
-    public Restaurants() {
-        List<List<String>> restaurants = new ArrayList<List<String>>();
+    public List<Restaurant> getRestaurants() {
+        List<Restaurant> restaurants = new ArrayList<Restaurant>();
         // TODO 상대 경로로 변경하기
-        File restaurantsCsv = new File(
+        File rawCsv = new File(
                 "/home/chori/workspace/project/restaurant-personnel-status-service/src/com/np/restaurant/restaurants/restaurants.csv");
         BufferedReader reader = null;
         String line;
 
         try {
-            reader = new BufferedReader(new FileReader(restaurantsCsv));
+            reader = new BufferedReader(new FileReader(rawCsv));
             while ((line = reader.readLine()) != null) {
-                List<String> restaurantInfo = new ArrayList<String>();
-                String[] lineArray = line.split(",");
-                restaurantInfo = Arrays.asList(lineArray);
-                restaurants.add(restaurantInfo);
+                String[] tokenArray = line.split(",");
+                Restaurant restaurant = new Restaurant(
+                        tokenArray[0], // 카테고리
+                        tokenArray[1], // 음식점명
+                        tokenArray[2], // 운영 요일
+                        tokenArray[3], // 운영 시간
+                        tokenArray[4]); // 브레이크 타임
+                restaurants.add(restaurant);
             }
         } catch (Exception e) {
             System.err.println(e);
@@ -38,10 +39,6 @@ public class Restaurants implements Serializable {
                 System.err.println(e);
             }
         }
-        this.restaurants = restaurants;
-    }
-
-    public List<List<String>> getRestaurants() {
         return restaurants;
     }
 }

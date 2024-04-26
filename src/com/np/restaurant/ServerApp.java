@@ -6,11 +6,13 @@ import java.util.*;
 
 import com.np.restaurant.chatting.ServerChat;
 import com.np.restaurant.restaurants.Restaurants;
+import com.np.restaurant.restaurants.Restaurant;
 import com.np.restaurant.user.User;
 
 public class ServerApp {
     private static List<User> loggedInUsers = new ArrayList<User>();
     private static HashMap<User, PrintWriter> chattingUsers = new HashMap<User, PrintWriter>();
+    private static List<Restaurant> restaurants = new Restaurants().getRestaurants();
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(10001)) {
@@ -52,6 +54,10 @@ public class ServerApp {
 
     public static synchronized HashMap<User, PrintWriter> getChattingUsers() {
         return new HashMap<User, PrintWriter>(chattingUsers);
+    }
+
+    public static List<Restaurant> getRestaurants() {
+        return restaurants;
     }
 }
 
@@ -150,9 +156,8 @@ class ClientThread extends Thread {
     }
 
     private void showRestaurants() {
-        Restaurants restaurants = new Restaurants();
         try {
-            objectOutputStream.writeObject(restaurants);
+            objectOutputStream.writeObject(ServerApp.getRestaurants());
             objectOutputStream.flush();
             objectOutputStream.reset();
         } catch (Exception e) {

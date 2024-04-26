@@ -5,7 +5,7 @@ import java.net.*;
 import java.util.List;
 
 import com.np.restaurant.chatting.ClientChat;
-import com.np.restaurant.restaurants.Restaurants;
+import com.np.restaurant.restaurants.Restaurant;
 import com.np.restaurant.user.User;
 
 public class ClientApp {
@@ -44,7 +44,7 @@ public class ClientApp {
     private void commandSelection(String selectedCommand) {
         switch (selectedCommand) {
             case "전체 기능":
-                printAllCommands();
+                showAllCommands();
                 break;
             case "로그인":
                 if (user == null) {
@@ -97,7 +97,7 @@ public class ClientApp {
         }
     }
 
-    private void printAllCommands() {
+    private void showAllCommands() {
         System.out.println("사용할 수 있는 기능");
         System.out.println("로그인, 음식점 조회, 채팅, 종료");
     }
@@ -147,10 +147,9 @@ public class ClientApp {
 
     private void showRestaurants() {
         try {
-            Restaurants restaurants = (Restaurants) objectInputStream.readObject();
-            List<List<String>> restaurantList = restaurants.getRestaurants();
-            for (List<String> restaurant : restaurantList) {
-                System.out.println(restaurant);
+            List<Restaurant> restaurants = (List<Restaurant>) objectInputStream.readObject();
+            for (Restaurant restaurant : restaurants) {
+                System.out.println(restaurant.toString());
             }
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("음식점 객체 수신 오류: " + e.getMessage());
