@@ -64,7 +64,6 @@ public class ServerApp {
 class ClientThread extends Thread {
     private Socket clientSocket;
     private BufferedReader reader;
-    private PrintWriter writer;
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
     private User user;
@@ -73,7 +72,6 @@ class ClientThread extends Thread {
         this.clientSocket = clientSocket;
         try {
             reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
             objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
             objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
         } catch (IOException e) {
@@ -113,15 +111,29 @@ class ClientThread extends Thread {
     }
 
     private void login() {
+        SuccessFlag successFlag;
         try {
-            String username = reader.readLine();
-            System.out.println("클라이언트에서 받은 사용자 이름: " + username);
-            this.user = new User(username);
-            ServerApp.addUser(user); // 사용자 추가
-            objectOutputStream.writeObject(user);
+            User user = (User) objectInputStream.readObject();
+            System.out.println("클라이언트에서 받은 사용자 이름: " + user.getName());
+            List<User> loggedInUsers = ServerApp.getLoggedInUsers();
+            for (User loggedInUser : loggedInUsers) {
+                String loggedInUsername = loggedInUser.getName();
+                if (loggedInUsername.equals(user.getName())) {
+                    successFlag = new SuccessFlag(false);
+                    objectOutputStream.writeObject(successFlag);
+                    objectOutputStream.flush();
+                    objectOutputStream.reset();
+                    return;
+                }
+            }
+            successFlag = new SuccessFlag(true);
+            objectOutputStream.writeObject(successFlag);
             objectOutputStream.flush();
             objectOutputStream.reset();
-        } catch (IOException e) {
+            this.user = user;
+            ServerApp.addUser(user); // 사용자 추가
+
+        } catch (Exception e) {
             System.err.println("사용자 객체 전송 오류: " + e.getMessage());
         }
     }
@@ -130,8 +142,10 @@ class ClientThread extends Thread {
         try {
             ServerApp.removeUser(user);
             user = null;
-            writer.println("success");
-            writer.flush();
+            SuccessFlag successFlag = new SuccessFlag(true);
+            objectOutputStream.writeObject(successFlag);
+            objectOutputStream.flush();
+            objectOutputStream.reset();
         } catch (Exception e) {
             System.err.println("로그아웃 오류: " + e.getMessage());
         }
@@ -157,7 +171,6 @@ class ClientThread extends Thread {
     private void terminateApp() {
         try {
             clientSocket.close();
-            writer.close();
             reader.close();
             objectInputStream.close();
             objectOutputStream.close();

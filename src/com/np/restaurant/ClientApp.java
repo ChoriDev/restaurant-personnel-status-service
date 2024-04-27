@@ -15,7 +15,6 @@ public class ClientApp {
     private BufferedReader reader;
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
-    private PrintWriter writer;
     private BufferedReader keyboard;
     private User user;
 
@@ -27,7 +26,6 @@ public class ClientApp {
             reader = new BufferedReader(new InputStreamReader(in));
             objectOutputStream = new ObjectOutputStream(out);
             objectInputStream = new ObjectInputStream(in);
-            writer = new PrintWriter(new OutputStreamWriter(out));
             keyboard = new BufferedReader(new InputStreamReader(System.in));
         } catch (IOException e) {
             System.err.println("클라이언트 초기화 오류: " + e.getMessage());
@@ -113,32 +111,43 @@ public class ClientApp {
     private void login() {
         System.out.print("사용자의 이름을 알려주세요: ");
         String name = "";
-        try {
-            while (name.isEmpty()) {
-                name = keyboard.readLine();
-                if (name.trim().isEmpty()) {
-                    System.out.print("이름을 다시 입력해주세요: ");
-                }
-            }
-            writer.println(name);
-            writer.flush();
+        SuccessFlag successFlag;
+        while (name.isEmpty()) {
             try {
-                this.user = (User) objectInputStream.readObject();
-                System.out.println(user.getName() + "님 반갑습니다.");
-            } catch (IOException | ClassNotFoundException e) {
-                System.err.println("사용자 객체 수신 오류: " + e.getMessage());
-                System.out.println("로그인에 실패했습니다.");
+                name = keyboard.readLine();
+            } catch (IOException e) {
+                System.err.println(e);
             }
-        } catch (IOException e) {
-            System.err.println("로그인 오류: " + e.getMessage());
-            System.out.println("로그인에 실패했습니다.");
+            if (name.trim().isEmpty()) {
+                System.out.print("이름을 다시 입력해주세요: ");
+            }
+        }
+        User user = new User(name);
+        try {
+            objectOutputStream.writeObject(user);
+            objectOutputStream.flush();
+            objectOutputStream.reset();
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+        try {
+            successFlag = (SuccessFlag) objectInputStream.readObject();
+            if (successFlag.getFlag()) {
+                this.user = user;
+                System.out.println(user.getName() + "님 반갑습니다.");
+            } else {
+                System.out.println("중복되는 아이디로 인해 로그인에 실패했습니다.");
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("사용자 객체 수신 오류: " + e.getMessage());
         }
     }
 
     public void logout() {
+        SuccessFlag successFlag;
         try {
-            // TODO 서버의 첫 메시지 이슈 해결 후 contains 대신 equals로 바꾸기
-            if ((reader.readLine()).contains("success")) {
+            successFlag = (SuccessFlag) objectInputStream.readObject();
+            if (successFlag.getFlag()) {
                 user = null;
                 System.out.println("로그아웃되었습니다.");
             }
@@ -172,7 +181,6 @@ public class ClientApp {
             reader.close();
             objectInputStream.close();
             objectOutputStream.close();
-            writer.close();
             keyboard.close();
         } catch (IOException e) {
             System.err.println("애플리케이션 종료 오류: " + e.getMessage());
