@@ -11,7 +11,7 @@ import com.np.restaurant.user.User;
 
 public class ServerApp {
     private static List<User> loggedInUsers = new ArrayList<User>();
-    private static HashMap<User, PrintWriter> chattingUsers = new HashMap<User, PrintWriter>();
+    private static HashMap<User, ObjectOutputStream> chattingUsers = new HashMap<User, ObjectOutputStream>();
     private static List<Restaurant> restaurants = new Restaurants().getRestaurants();
 
     public static void main(String[] args) {
@@ -42,8 +42,8 @@ public class ServerApp {
         return new ArrayList<User>(loggedInUsers);
     }
 
-    public static synchronized void addChattingUser(User user, PrintWriter writer) {
-        chattingUsers.put(user, writer);
+    public static synchronized void addChattingUser(User user, ObjectOutputStream objectOutputStream) {
+        chattingUsers.put(user, objectOutputStream);
         System.out.println("새로운 사용자가 채팅방에 참여합니다: " + user.getName());
     }
 
@@ -52,8 +52,8 @@ public class ServerApp {
         System.out.println("사용자가 채팅방을 나갔습니다: " + user.getName());
     }
 
-    public static synchronized HashMap<User, PrintWriter> getChattingUsers() {
-        return new HashMap<User, PrintWriter>(chattingUsers);
+    public static synchronized HashMap<User, ObjectOutputStream> getChattingUsers() {
+        return new HashMap<User, ObjectOutputStream>(chattingUsers);
     }
 
     public static List<Restaurant> getRestaurants() {
@@ -65,6 +65,7 @@ class ClientThread extends Thread {
     private Socket clientSocket;
     private BufferedReader reader;
     private PrintWriter writer;
+    private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
     private User user;
 
@@ -73,6 +74,7 @@ class ClientThread extends Thread {
         try {
             reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+            objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
             objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
         } catch (IOException e) {
             System.err.println("클라이언트 초기화 오류: " + e.getMessage());
@@ -81,44 +83,31 @@ class ClientThread extends Thread {
 
     @Override
     public void run() {
-        try {
-            while (true) {
-                int command = Integer.parseInt(reader.readLine());
-                switch (command) {
-                    case 0:
-                        // 로그인
+        Command command;
+        while (true) {
+            try {
+                command = (Command) objectInputStream.readObject();
+                switch (command.getCommand()) {
+                    case "로그인":
                         login();
                         break;
-                    case 1:
-                        // 로그아웃
+                    case "로그아웃":
                         logout();
                         break;
-                    case 2:
-                        // 음식점 조회
+                    case "음식점 조회":
                         showRestaurants();
                         break;
-                    case 3:
-                        // 채팅
+                    case "채팅":
                         chat();
                         break;
-                    case -1:
-                        // 종료
+                    case "종료":
                         terminateApp();
                         return; // 스레드 종료
                     default:
                         break;
                 }
-            }
-        } catch (IOException e) {
-            System.err.println("클라이언트와의 통신 오류: " + e.getMessage());
-        } finally {
-            try {
-                clientSocket.close();
-                writer.close();
-                reader.close();
-                objectOutputStream.close();
-            } catch (IOException e) {
-                System.err.println("애플리케이션 종료 오류: " + e.getMessage());
+            } catch (Exception e) {
+                System.err.println(e);
             }
         }
     }
@@ -149,8 +138,8 @@ class ClientThread extends Thread {
     }
 
     private void chat() {
-        ServerApp.addChattingUser(user, writer);
-        ServerChat serverChat = new ServerChat(user, reader);
+        ServerApp.addChattingUser(user, objectOutputStream);
+        ServerChat serverChat = new ServerChat(objectInputStream);
         serverChat.start();
         ServerApp.removeChattingUser(user);
     }
@@ -170,6 +159,7 @@ class ClientThread extends Thread {
             clientSocket.close();
             writer.close();
             reader.close();
+            objectInputStream.close();
             objectOutputStream.close();
         } catch (IOException e) {
             System.err.println("애플리케이션 종료 오류: " + e.getMessage());
