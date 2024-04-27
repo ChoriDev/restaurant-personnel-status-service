@@ -1,10 +1,8 @@
 package com.np.restaurant.chatting;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,9 +12,11 @@ import com.np.restaurant.user.User;
 
 public class ServerChat {
     private ObjectInputStream objectInputStream;
+    private ObjectOutputStream selfObjectOutputStream;
 
-    public ServerChat(ObjectInputStream objectInputStream) {
+    public ServerChat(ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream) {
         this.objectInputStream = objectInputStream;
+        this.selfObjectOutputStream = objectOutputStream;
     }
 
     public void start() {
@@ -24,10 +24,11 @@ public class ServerChat {
         try {
             while ((message = (Message) objectInputStream.readObject()) != null) {
                 String content = message.getContent();
+                System.out.println("클라이언트가 보낸 메시지: " + content);
                 if (content.equals("quit")) {
+                    sendQuit(message);
                     break;
                 }
-                System.out.println("클라이언트가 보낸 메시지: " + content);
                 broadcast(message);
             }
         } catch (Exception e) {
@@ -51,6 +52,16 @@ public class ServerChat {
                     System.err.println(e);
                 }
             }
+        }
+    }
+
+    public void sendQuit(Message message) {
+        try {
+            selfObjectOutputStream.writeObject(message);
+            selfObjectOutputStream.flush();
+            selfObjectOutputStream.reset();
+        } catch (IOException e) {
+            System.err.println(e);
         }
     }
 }

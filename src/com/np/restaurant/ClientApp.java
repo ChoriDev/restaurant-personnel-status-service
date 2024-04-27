@@ -146,7 +146,7 @@ public class ClientApp {
     public void logout() {
         SuccessFlag successFlag;
         try {
-            successFlag = (SuccessFlag) objectInputStream.readObject();
+            successFlag = (SuccessFlag) objectInputStream.readObject(); // error
             if (successFlag.getFlag()) {
                 user = null;
                 System.out.println("로그아웃되었습니다.");

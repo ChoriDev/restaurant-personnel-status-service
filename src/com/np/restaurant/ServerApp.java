@@ -153,7 +153,7 @@ class ClientThread extends Thread {
 
     private void chat() {
         ServerApp.addChattingUser(user, objectOutputStream);
-        ServerChat serverChat = new ServerChat(objectInputStream);
+        ServerChat serverChat = new ServerChat(objectInputStream, objectOutputStream);
         serverChat.start();
         ServerApp.removeChattingUser(user);
     }

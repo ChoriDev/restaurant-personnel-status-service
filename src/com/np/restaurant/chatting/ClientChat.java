@@ -62,6 +62,9 @@ class InputThread extends Thread {
                     User sender = message.getSender();
                     String content = message.getContent();
                     if (content != null) {
+                        if (content.equals("quit")) {
+                            return;
+                        }
                         System.out.println(sender.getName() + ": " + content);
                     }
                 }
