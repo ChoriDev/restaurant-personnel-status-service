@@ -63,17 +63,23 @@ public class ServerApp {
 
 class ClientThread extends Thread {
     private Socket clientSocket;
+    private InputStream in;
+    private OutputStream out;
     private BufferedReader reader;
     private PrintWriter writer;
+    private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
     private User user;
 
     public ClientThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
         try {
-            reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-            objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+            in = clientSocket.getInputStream();
+            out = clientSocket.getOutputStream();
+            reader = new BufferedReader(new InputStreamReader(in));
+            writer = new PrintWriter(new OutputStreamWriter(out));
+            objectInputStream = new ObjectInputStream(in);
+            objectOutputStream = new ObjectOutputStream(out);
         } catch (IOException e) {
             System.err.println("클라이언트 초기화 오류: " + e.getMessage());
         }
@@ -101,6 +107,10 @@ class ClientThread extends Thread {
                         // 채팅
                         chat();
                         break;
+                    case 4:
+                        // 음식점 선택
+                        changeTargetRestaurant();
+                        break;
                     case -1:
                         // 종료
                         terminateApp();
@@ -113,10 +123,13 @@ class ClientThread extends Thread {
             System.err.println("클라이언트와의 통신 오류: " + e.getMessage());
         } finally {
             try {
-                clientSocket.close();
                 writer.close();
                 reader.close();
+                objectInputStream.close();
                 objectOutputStream.close();
+                in.close();
+                out.close();
+                clientSocket.close();
             } catch (IOException e) {
                 System.err.println("애플리케이션 종료 오류: " + e.getMessage());
             }
@@ -165,12 +178,24 @@ class ClientThread extends Thread {
         }
     }
 
+    // TODO 만드는 중
+    private void changeTargetRestaurant() {
+        String oldTargetRestaurant = user.getTargetRestaurant();
+        String oldDiningAt = user.getDiningAt();
+        User newUser;
+        try {
+            newUser = (User) objectInputStream.readObject();
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+    }
+
     private void terminateApp() {
         try {
-            clientSocket.close();
             writer.close();
             reader.close();
             objectOutputStream.close();
+            clientSocket.close();
         } catch (IOException e) {
             System.err.println("애플리케이션 종료 오류: " + e.getMessage());
         }

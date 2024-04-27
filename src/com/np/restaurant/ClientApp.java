@@ -10,18 +10,24 @@ import com.np.restaurant.user.User;
 
 public class ClientApp {
     private Socket socket;
+    private InputStream in;
+    private OutputStream out;
     private BufferedReader reader;
     private ObjectInputStream objectInputStream;
+    private ObjectOutputStream objectOutputStream;
     private PrintWriter writer;
     private BufferedReader keyboard;
     private User user;
 
     public ClientApp() {
         try {
+            in = socket.getInputStream();
+            out = socket.getOutputStream();
             socket = new Socket("localhost", 10001);
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            objectInputStream = new ObjectInputStream(socket.getInputStream());
-            writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            reader = new BufferedReader(new InputStreamReader(in));
+            objectInputStream = new ObjectInputStream(in);
+            objectOutputStream = new ObjectOutputStream(out);
+            writer = new PrintWriter(new OutputStreamWriter(out));
             keyboard = new BufferedReader(new InputStreamReader(System.in));
         } catch (IOException e) {
             System.err.println("클라이언트 초기화 오류: " + e.getMessage());
@@ -74,6 +80,14 @@ public class ClientApp {
                 if (user != null) {
                     sendCommand(3);
                     chat();
+                } else {
+                    System.out.println("로그인 후 이용할 수 있습니다.");
+                }
+            case "음식점 선택":
+                if (user != null) {
+                    sendCommand(4);
+                    // 음식점 선택 메소드
+                    changeTargetRestaurant();
                 } else {
                     System.out.println("로그인 후 이용할 수 있습니다.");
                 }
@@ -156,13 +170,27 @@ public class ClientApp {
         }
     }
 
+    private void changeTargetRestaurant() {
+        try {
+            String line = keyboard.readLine();
+            user.setTargetRestaurant(line);
+            objectOutputStream.writeObject(user);
+            objectOutputStream.flush();
+            objectOutputStream.close();
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+    }
+
     private void terminateApp() {
         try {
-            socket.close();
             reader.close();
             objectInputStream.close();
             writer.close();
+            in.close();
+            out.close();
             keyboard.close();
+            socket.close();
         } catch (IOException e) {
             System.err.println("애플리케이션 종료 오류: " + e.getMessage());
         }
