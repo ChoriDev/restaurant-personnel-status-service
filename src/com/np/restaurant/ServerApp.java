@@ -56,8 +56,8 @@ public class ServerApp {
         return new HashMap<User, ObjectOutputStream>(chattingUsers);
     }
 
-    public static List<Restaurant> getRestaurants() {
-        return restaurants;
+    public static synchronized List<Restaurant> getRestaurants() {
+        return new ArrayList<Restaurant>(restaurants);
     }
 }
 
@@ -81,11 +81,10 @@ class ClientThread extends Thread {
 
     @Override
     public void run() {
-        Command command;
         while (true) {
             try {
-                command = (Command) objectInputStream.readObject();
-                switch (command.getCommand()) {
+                String command = (String) objectInputStream.readObject();
+                switch (command) {
                     case "로그인":
                         login();
                         break;
@@ -94,6 +93,9 @@ class ClientThread extends Thread {
                         break;
                     case "음식점 조회":
                         showRestaurants();
+                        break;
+                    case "음식점 검색":
+                        searchRestaurant();
                         break;
                     case "채팅":
                         chat();
@@ -104,8 +106,8 @@ class ClientThread extends Thread {
                     default:
                         break;
                 }
-            } catch (Exception e) {
-                System.err.println(e);
+            } catch (IOException | ClassNotFoundException e) {
+                System.err.println("명령어 수신 오류: " + e.getMessage());
             }
         }
     }
@@ -163,8 +165,34 @@ class ClientThread extends Thread {
             objectOutputStream.writeObject(ServerApp.getRestaurants());
             objectOutputStream.flush();
             objectOutputStream.reset();
-        } catch (Exception e) {
-            System.err.println(e);
+        } catch (IOException e) {
+            System.err.println("음식점 객체 전송 오류: " + e.getMessage());
+        }
+    }
+
+    private void searchRestaurant() {
+        String searchWord = null;
+        List<Restaurant> restaurants = ServerApp.getRestaurants();
+        List<Restaurant> result = new ArrayList<>();
+
+        try {
+            searchWord = (String) objectInputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("검색어 수신 오류: " + e.getMessage());
+        }
+
+        for (Restaurant restaurant : restaurants) {
+            if (restaurant.getName().contains(searchWord)) {
+                result.add(restaurant);
+            }
+        }
+
+        try {
+            objectOutputStream.writeObject(result);
+            objectOutputStream.flush();
+            objectOutputStream.reset();
+        } catch (IOException e) {
+            System.err.println("음식점 객체 전송 오류: " + e.getMessage());
         }
     }
 

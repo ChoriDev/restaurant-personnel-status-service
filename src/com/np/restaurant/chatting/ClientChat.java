@@ -27,7 +27,7 @@ public class ClientChat {
         System.out.println("다른 사람에게 메시지를 보냅니다.");
         InputThread inputThread = new InputThread(objectInputStream);
         inputThread.start();
-        Message message = new Message(user, null);
+        Message message = new Message(user, null, null);
         String line = null;
         try {
             while ((line = keyboard.readLine()) != null) {
