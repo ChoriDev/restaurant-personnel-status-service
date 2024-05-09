@@ -92,8 +92,7 @@ public class ClientApp {
         }
     }
 
-    private void sendCommand(String inputCommand) {
-        Command command = new Command(inputCommand);
+    private void sendCommand(String command) {
         try {
             objectOutputStream.writeObject(command);
             objectOutputStream.flush();

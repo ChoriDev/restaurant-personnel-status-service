@@ -56,8 +56,8 @@ public class ServerApp {
         return new HashMap<User, ObjectOutputStream>(chattingUsers);
     }
 
-    public static List<Restaurant> getRestaurants() {
-        return restaurants;
+    public static synchronized List<Restaurant> getRestaurants() {
+        return new ArrayList<Restaurant>(restaurants);
     }
 }
 
@@ -81,11 +81,10 @@ class ClientThread extends Thread {
 
     @Override
     public void run() {
-        Command command;
         while (true) {
             try {
-                command = (Command) objectInputStream.readObject();
-                switch (command.getCommand()) {
+                String command = (String) objectInputStream.readObject();
+                switch (command) {
                     case "로그인":
                         login();
                         break;
