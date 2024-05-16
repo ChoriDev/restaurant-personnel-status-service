@@ -1,11 +1,16 @@
 package com.np.restaurant.ui;
 
+import com.np.restaurant.restaurants.Restaurant;
+import com.np.restaurant.restaurants.Restaurants;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Field;
+import java.util.List;
 
 public class MainScreen extends JFrame {
 
@@ -14,32 +19,13 @@ public class MainScreen extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(500, 500);
 
-        // 음식점 데이터 (이름, 버튼1 레이블, 버튼2 레이블, 버튼3 레이블)
-        String[][] restaurants = {
-                {"레스토랑 A", "버튼1", "버튼2", "버튼3"},
-                {"레스토랑 B", "버튼1", "버튼2", "버튼3"},
-                {"레스토랑 C", "버튼1", "버튼2", "버튼3"},
-                {"레스토랑 C", "버튼1", "버튼2", "버튼3"},
-                {"레스토랑 C", "버튼1", "버튼2", "버튼3"},
-                {"레스토랑 C", "버튼1", "버튼2", "버튼3"},
-                {"레스토랑 C", "버튼1", "버튼2", "버튼3"},
-                {"레스토랑 C", "버튼1", "버튼2", "버튼3"},
-                {"레스토랑 C", "버튼1", "버튼2", "버튼3"},
-                {"레스토랑 B", "버튼1", "버튼2", "버튼3"},
-                {"레스토랑 B", "버튼1", "버튼2", "버튼3"},
-                {"레스토랑 B", "버튼1", "버튼2", "버튼3"},
-                {"레스토랑 A", "버튼1", "버튼2", "버튼3"},
-                {"레스토랑 A", "버튼1", "버튼2", "버튼3"},
-                {"레스토랑 A", "버튼1", "버튼2", "버튼3"},
-                {"레스토랑 A", "버튼1", "버튼2", "버튼3"},
-                {"레스토랑 A", "버튼1", "버튼2", "버튼3"},
-        };
+        List<Restaurant> restaurants = Restaurants.getRestaurants();
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
         JPanel restaurantPanel = new JPanel();
-        restaurantPanel.setLayout(new GridLayout(restaurants.length, 1));
+        restaurantPanel.setLayout(new GridLayout(restaurants.size(), 1));
 
         JPanel searchPanel = new JPanel();
         searchPanel.setLayout(new GridLayout(3, 1));
@@ -52,27 +38,42 @@ public class MainScreen extends JFrame {
         searchPanel.add(searchButton);
         searchPanel.add(refreshButton);
 
-        for (String[] restaurant : restaurants) {
-            JPanel tempPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            JLabel nameLabel = new JLabel(restaurant[0]);
-            tempPanel.add(nameLabel);
+        for (Restaurant restaurant : restaurants) {
+            JPanel tempPanel = new JPanel(new BorderLayout());
+            JLabel nameLabel = new JLabel(restaurant.getName());
+            tempPanel.add(nameLabel, BorderLayout.WEST);
 
-            for (int i = 1; i < restaurant.length; i++) {
-                JButton button = new JButton(restaurant[i]);
-                tempPanel.add(new JLabel(""));
-                tempPanel.add(button);
-                button.addActionListener(new ButtonListener());
-            }
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-            tempPanel.addMouseListener(new MouseAdapter() {
+            // 가는중 버튼
+            JButton goingButton = new JButton("가는중");
+            buttonPanel.add(new JLabel("    "));
+            buttonPanel.add(goingButton);
+            goingButton.addActionListener(new ButtonListener());
+
+            // 식사중 버튼
+            JButton eatingButton = new JButton("식사중");
+            buttonPanel.add(new JLabel("    "));
+            buttonPanel.add(eatingButton);
+            eatingButton.addActionListener(new ButtonListener());
+
+            // 추천수 버튼
+            JButton recommendButton = new JButton("추천수");
+            buttonPanel.add(new JLabel("    "));
+            buttonPanel.add(recommendButton);
+            recommendButton.addActionListener(new ButtonListener());
+
+
+            tempPanel.addMouseListener(new MouseAdapter() {     // 상세 페이지로 이동
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    // 새로운 화면으로 전환
-                    JFrame newFrame = new NewScreen(nameLabel.getText());
+                    JFrame newFrame = new DetailScreen(restaurant);
                     newFrame.setVisible(true);
                     MainScreen.this.setVisible(false);
                 }
             });
+
+            tempPanel.add(buttonPanel, BorderLayout.EAST);
 
             restaurantPanel.add(tempPanel);
         }
@@ -84,6 +85,13 @@ public class MainScreen extends JFrame {
 
         JButton chattingButton = new JButton("채팅방");
         mainPanel.add(chattingButton, BorderLayout.SOUTH);
+        chattingButton.addMouseListener(new MouseAdapter() {
+                                       @Override
+                                       public void mouseClicked(MouseEvent e) {     // 채팅버튼 클릭시 채팅방으로 이동
+                                           JFrame newFrame = new ChattingScreen();
+                                           newFrame.setVisible(true);
+                                       }
+                                   });
 
 
         getContentPane().add(mainPanel);
@@ -95,21 +103,10 @@ public class MainScreen extends JFrame {
         SwingUtilities.invokeLater(MainScreen::new);
     }
 
-    private static class ButtonListener implements ActionListener {
+    private static class ButtonListener implements ActionListener { // 버튼이 클릭 되었을 때 취할 행동
         @Override
         public void actionPerformed(ActionEvent e) {
-            // 버튼 클릭시 동작할 내용을 여기에 작성하세요.
             JOptionPane.showMessageDialog(null, "버튼이 클릭되었습니다.");
-        }
-    }
-    private static class NewScreen extends JFrame {
-        public NewScreen(String restaurantName) {
-            setTitle("레스토랑: " + restaurantName);
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            setSize(400, 300);
-
-            JLabel label = new JLabel("Welcome to " + restaurantName);
-            add(label, BorderLayout.CENTER);
         }
     }
 }
