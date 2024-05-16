@@ -24,9 +24,11 @@ public class MainScreen extends JFrame {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
+        // 레스토랑 리스트들을 담아 둘 panel
         JPanel restaurantPanel = new JPanel();
         restaurantPanel.setLayout(new GridLayout(restaurants.size(), 1));
 
+        // 검색창 + 새로고침 창
         JPanel searchPanel = new JPanel();
         searchPanel.setLayout(new GridLayout(3, 1));
 
@@ -38,6 +40,7 @@ public class MainScreen extends JFrame {
         searchPanel.add(searchButton);
         searchPanel.add(refreshButton);
 
+        // 레스토랑당 한 줄 씩 표시할 UI
         for (Restaurant restaurant : restaurants) {
             JPanel tempPanel = new JPanel(new BorderLayout());
             JLabel nameLabel = new JLabel(restaurant.getName());
@@ -67,9 +70,8 @@ public class MainScreen extends JFrame {
             tempPanel.addMouseListener(new MouseAdapter() {     // 상세 페이지로 이동
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    JFrame newFrame = new DetailScreen(restaurant);
-                    newFrame.setVisible(true);
-                    MainScreen.this.setVisible(false);
+                    JFrame detailScreen = new DetailScreen(restaurant);
+                    detailScreen.setVisible(true);
                 }
             });
 
@@ -83,13 +85,15 @@ public class MainScreen extends JFrame {
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.add(searchPanel,BorderLayout.NORTH);
 
+
+        // 채팅방 버튼 맨 밑에 고정
         JButton chattingButton = new JButton("채팅방");
         mainPanel.add(chattingButton, BorderLayout.SOUTH);
         chattingButton.addMouseListener(new MouseAdapter() {
                                        @Override
                                        public void mouseClicked(MouseEvent e) {     // 채팅버튼 클릭시 채팅방으로 이동
-                                           JFrame newFrame = new ChattingScreen();
-                                           newFrame.setVisible(true);
+                                           JFrame chattingScreen = new ChattingScreen();
+                                           chattingScreen.setVisible(true);
                                        }
                                    });
 
@@ -103,7 +107,7 @@ public class MainScreen extends JFrame {
         SwingUtilities.invokeLater(MainScreen::new);
     }
 
-    private static class ButtonListener implements ActionListener { // 버튼이 클릭 되었을 때 취할 행동
+    private static class ButtonListener implements ActionListener { // 버튼이 클릭 되었을 때 취할 행동. 버튼 클릭시 중복되는 기능이 없어 안쓰일듯
         @Override
         public void actionPerformed(ActionEvent e) {
             JOptionPane.showMessageDialog(null, "버튼이 클릭되었습니다.");

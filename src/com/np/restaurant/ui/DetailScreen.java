@@ -6,17 +6,14 @@ import javax.swing.*;
 import java.awt.*;
 
 public class DetailScreen extends  JFrame{
-    public DetailScreen(Restaurant restaurant){
+    public DetailScreen(Restaurant restaurant){     // 각 레스토랑에 해당하는 상세페이지
         setTitle("레스토랑: " + restaurant.getName());
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 300);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
-        JLabel welcomeLabel = new JLabel("Welcome to " + restaurant.getName());
-        welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        mainPanel.add(welcomeLabel);
+        // 사진이 추가되면 좋을 듯
 
         JLabel nameLabel = new JLabel(restaurant.getName() + " / " + restaurant.getCategory());
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);

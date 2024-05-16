@@ -7,6 +7,7 @@ public class LoginScreen extends JFrame implements ActionListener {
     private final JTextField usernameField;
 
     public LoginScreen() {
+
         setTitle("가는중");
         setSize(300, 150);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -27,12 +28,18 @@ public class LoginScreen extends JFrame implements ActionListener {
         setVisible(true);
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {    // 로그인 버튼을 클릭할 때 사용될 actionListener
+
         String username = usernameField.getText();
+
         if (username.isEmpty()) {
             JOptionPane.showMessageDialog(this, "사용자 닉네임을 입력하세요.");
         } else {
             JOptionPane.showMessageDialog(this, "사용자 '" + username + "'으로 로그인되었습니다.");
+
+            JFrame mainScreen = new MainScreen();
+            mainScreen.setVisible(true);
+            LoginScreen.this.setVisible(false);
         }
     }
 

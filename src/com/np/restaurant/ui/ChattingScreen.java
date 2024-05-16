@@ -11,7 +11,6 @@ public class ChattingScreen extends JFrame {
 
     public ChattingScreen() {
         setTitle("채팅방");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(500, 500);
         setLayout(new BorderLayout());
 
@@ -31,14 +30,7 @@ public class ChattingScreen extends JFrame {
 
         add(inputPanel, BorderLayout.SOUTH);
 
-        sendButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendMessage();
-            }
-        });
-
-        inputField.addActionListener(new ActionListener() {
+        sendButton.addActionListener(new ActionListener() {     // 전송 버튼 클릭시 메세지 보냄
             @Override
             public void actionPerformed(ActionEvent e) {
                 sendMessage();
@@ -48,7 +40,7 @@ public class ChattingScreen extends JFrame {
         setVisible(true);
     }
 
-    private void sendMessage() {
+    private void sendMessage() {    // 내가 보내는 메세지 그냥 보여주기용으로 짬.
         String message = inputField.getText();
         if (!message.trim().isEmpty()) {
             chatArea.append("나: " + message + "\n");
