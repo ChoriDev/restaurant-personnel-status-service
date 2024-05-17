@@ -74,6 +74,14 @@ public class ClientApp {
                     System.out.println("로그인 후 이용할 수 있습니다.");
                 }
                 break;
+            case "음식점 검색":
+                if (user != null) {
+                    sendCommand(selectedCommand);
+                    searchRestaurant();
+                } else {
+                    System.out.println("로그인 후 이용할 수 있습니다.");
+                }
+                break;
             case "채팅":
                 if (user != null) {
                     sendCommand(selectedCommand);
@@ -162,6 +170,31 @@ public class ClientApp {
     }
 
     private void showRestaurants() {
+        try {
+            List<Restaurant> restaurants = (List<Restaurant>) objectInputStream.readObject();
+            for (Restaurant restaurant : restaurants) {
+                System.out.println(restaurant.toString());
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("음식점 객체 수신 오류: " + e.getMessage());
+        }
+    }
+
+    private void searchRestaurant() {
+        String searchWord = null;
+        System.out.println("검색할 음식점명을 알려주세요.");
+        try {
+            searchWord = keyboard.readLine().trim();
+        } catch (IOException e) {
+            System.err.println("입력 오류: " + e.getMessage());
+        }
+        try {
+            objectOutputStream.writeObject(searchWord);
+            objectOutputStream.flush();
+            objectOutputStream.reset();
+        } catch (IOException e) {
+            System.err.println("검색어 전송 오류: " + e.getMessage());
+        }
         try {
             List<Restaurant> restaurants = (List<Restaurant>) objectInputStream.readObject();
             for (Restaurant restaurant : restaurants) {
