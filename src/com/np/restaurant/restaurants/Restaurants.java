@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Restaurants implements Serializable {
-    public List<Restaurant> getRestaurants() {
+    public static List<Restaurant> getRestaurants() {
         List<Restaurant> restaurants = new ArrayList<Restaurant>();
         // TODO 상대 경로로 변경하기
         File rawCsv = new File(

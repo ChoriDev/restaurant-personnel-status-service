@@ -1,34 +1,22 @@
-﻿중식,송화산시도삭면,월 수 목 금,11:00 ~ 22:00,16:00 ~ 17:00
-중식,준성이네,화 수 목 금 토 일,10:30 ~ 21:30,.
-중식,매운향솥,월 화 수 목 금 토 일,11:30 ~ 23:10,.
-중식,중경식객,월 화 수 목 금 토 일,11:00 ~ 23:00,.
-중식,시옌,월 화 수 목 금 토 일,11:00 ~ 22:00,15:00 ~ 17:00
-중식,화원식당,월 화 수 목 금 토 일,10:00 ~ 21:00,.
-양식,메드포갈릭,월 수 목 금,11:20 ~ 22:00,16:00 ~ 17:00
-양식,페스타마레,월 화 수 목 금 토 일,11:20 ~ 21:00,.
-양식,더 옐로우,월 화 수 목 금 토 일,11:20 ~ 22:00,.
-양식,칙바이칙,월 화 수 목 금 토 일,10:00 ~ 21:00,.
-양식,감성타코,월 화 수 목 금 토 일,12:00 ~ 22:00,.
-양식,피자스쿨,월 화 수 목 금 토 일,11:00 ~ 22:30,.
-양식,래빗홀,월 화 수 목 금 토,11:00 ~ 21:00,15:00 ~ 17:00
-양식,밀플랜비,월 화 수 목 금 일,10:30 ~ 21:30,.
-한식,동대문엽기떡볶이,월 화 수 목 금 토 일,11:30 ~ 01:00,.
-한식,춘천집,월 화 수 목 금 토 일,10:30 ~ 23:00,.
-한식,예산국수,월 화 수 목 금 토 일,11:00 ~ 22:00,.
-한식,미사리밀빛초계국수,월 화 수 목 금 토 일,09:30 ~ 21:30,.
-한식,내가찜한닭,월 화 수 목 금 토 일,10:00 ~ 22:30,.
-한식,소박한상,월 화 수 목 금,11:00 ~ 19:00,.
-한식,콩불,월 화 수 목 금 토 일,11:00 ~ 22:00,15:30 ~ 17:00
-한식,알촌,월 화 수 목 금 일,09:00 ~ 20:00,.
-한식,위락밥집,월 화 수 목 금,10:00 ~ 19:00,.
-한식,샘터골,월 화 수 목 금 토 일,10:00 ~ 22:00,.
-일식,백소정,월 화 수 목 금 토 일,11:00 ~ 21:00,14:30 ~ 15:30
-일식,겐로쿠우동,화 수 목 금 토 일,11:30 ~ 22:00,.
-일식,네꼬,월 화 목 금 토 일,12:00 ~ 20:00,15:00 ~ 16:30
-일식,멘쇼,월 화 수 목 금 토,11:30 ~ 21:00,14:30 ~ 17:00
-일식,초라멘,화 수 목 금 토 일,11:00 ~ 19:30,14:00 ~ 17:00
-일식,샤브로 21,월 화 수 목 금 토 일,10:30 ~ 23:00,.
-일식,카토카츠,월 화 수 목 금 토,11:30 ~ 21:00,15:00 ~ 17:00
-일식,가츠시,월 화 수 목 금 일,11:00 ~ 21:30,.
-일식,하루,월 화 수 목 금 토 일,11:00 ~ 22:00,.
-일식,코코도리,월 화 수 목 금 토 일,11:00 ~ 20:00,.
+﻿Chinese,SonghwasansiDosakmeon,Mon Wed Thu Fri,11:00 ~ 22:00,16:00 ~ 17:00
+Western,MealPlanB,Mon Tue Wed Thu Fri Sun,10:30 ~ 21:30,.
+Korean,Dongdaemoon,Mon Tue Wed Thu Fri Sat Sun,11:30 ~ 01:00,.
+Korean,ChunCheonGip,Mon Tue Wed Thu Fri Sat Sun,10:30 ~ 23:00,.
+Korean,Yeasanguksoo,Mon Tue Wed Thu Fri Sat Sun,11:00 ~ 22:00,.
+Korean,Misarimilbitchogaeguksoo,Mon Tue Wed Thu Fri Sat Sun,09:30 ~ 21:30,.
+Korean,Nagazzimhandaek,Mon Tue Wed Thu Fri Sat Sun,10:00 ~ 22:30,.
+Korean,Shobaekhansang,Mon Tue Wed Thu Fri,11:00 ~ 19:00,.
+Korean,Kongbul,Mon Tue Wed Thu Fri Sat Sun,11:00 ~ 22:00,15:30 ~ 17:00
+Korean,Alchon,Mon Tue Wed Thu Fri Sun,09:00 ~ 20:00,.
+Korean,Weerack,Mon Tue Wed Thu Fri,10:00 ~ 19:00,.
+Korean,Santeogoal,Mon Tue Wed Thu Fri Sat Sun,10:00 ~ 22:00,.
+Japanese,Baeksojung,Mon Tue Wed Thu Fri Sat Sun,11:00 ~ 21:00,14:30 ~ 15:30
+Japanese,Genroku,Tue Wed Thu Fri Sat Sun,11:30 ~ 22:00,.
+Japanese,Neggo,Mon Tue Thu Fri Sat Sun,12:00 ~ 20:00,15:00 ~ 16:30
+Japanese,Mensho,Mon Tue Wed Thu Fri Sat,11:30 ~ 21:00,14:30 ~ 17:00
+Japanese,Choramen,Tue Wed Thu Fri Sat Sun,11:00 ~ 19:30,14:00 ~ 17:00
+Japanese,Savro 21,Mon Tue Wed Thu Fri Sat Sun,10:30 ~ 23:00,.
+Japanese,katokachu,Mon Tue Wed Thu Fri Sat,11:30 ~ 21:00,15:00 ~ 17:00
+Japanese,Kachusi,Mon Tue Wed Thu Fri Sun,11:00 ~ 21:30,.
+Japanese,Haru,Mon Tue Wed Thu Fri Sat Sun,11:00 ~ 22:00,.
+Japanese,Kokodori,Mon Tue Wed Thu Fri Sat Sun,11:00 ~ 20:00,.
