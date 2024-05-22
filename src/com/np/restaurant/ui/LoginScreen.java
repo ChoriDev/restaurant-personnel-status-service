@@ -1,15 +1,20 @@
 package com.np.restaurant.ui;
 
+import com.np.restaurant.ClientApp;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class LoginScreen extends JFrame implements ActionListener {
     private final JTextField usernameField;
+    private final ClientApp clientApp;
 
-    public LoginScreen() {
+    public LoginScreen(ClientApp clientApp) {
+        this.clientApp = clientApp;
 
-        setTitle("going");
+        setTitle("Login");
         setSize(300, 150);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -20,7 +25,7 @@ public class LoginScreen extends JFrame implements ActionListener {
         usernameField = new JTextField();
         panel.add(usernameField);
 
-        JButton loginButton = new JButton("login");
+        JButton loginButton = new JButton("Login");
         loginButton.addActionListener(this);
         panel.add(loginButton);
 
@@ -29,22 +34,25 @@ public class LoginScreen extends JFrame implements ActionListener {
         setVisible(true);
     }
 
-    public void actionPerformed(ActionEvent e) { // 로그인 버튼을 클릭할 때 사용될 actionListener
-
+    public void actionPerformed(ActionEvent e) {
         String username = usernameField.getText();
-
         if (username.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Enter your name.");
         } else {
-            JOptionPane.showMessageDialog(this, "user '" + username + "'logins.");
-
-            JFrame mainScreen = new MainScreen();
-            mainScreen.setVisible(true);
-            LoginScreen.this.setVisible(false);
+            boolean loginSuccess = clientApp.login(username);
+            if (loginSuccess) {
+                JOptionPane.showMessageDialog(this, "User '" + username + "' logged in.");
+                JFrame mainScreen = new MainScreen(clientApp);
+                mainScreen.setVisible(true);
+                this.setVisible(false);
+            } else {
+                JOptionPane.showMessageDialog(this, "Login failed. Try a different username.");
+            }
         }
     }
 
     public static void main(String[] args) {
-        new LoginScreen();
+        ClientApp clientApp = new ClientApp();
+        new LoginScreen(clientApp);
     }
 }

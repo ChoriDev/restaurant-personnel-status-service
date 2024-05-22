@@ -22,7 +22,7 @@ public class ServerChat {
     public void start() {
         try {
             Message message;
-            broadcast(new Message(user, null, "채팅방에 입장했습니다."));
+            broadcast(new Message(user, null, "joins for chatting."));
             sendUserList();
             while ((message = (Message) objectInputStream.readObject()) != null) {
                 String content = message.getContent();
@@ -79,7 +79,7 @@ public class ServerChat {
 
         if (receiver == null) {
             System.err.println("User " + receiverName + " not found");
-            newMessage = new Message(user, null, "사용자 " + receiverName + "을(를) 찾을 수 없습니다.");
+            newMessage = new Message(user, null, "Uesr " + receiverName + " is not existed");
             try {
                 selfObjectOutputStream.writeObject(newMessage);
                 selfObjectOutputStream.flush();
@@ -96,7 +96,7 @@ public class ServerChat {
             return;
         }
 
-        newMessage = new Message(user, receiver, "(개인 메시지) " + privateContent);
+        newMessage = new Message(user, receiver, "(private message) " + privateContent);
 
         try {
             receiverOutputStream.writeObject(newMessage);
@@ -115,6 +115,7 @@ public class ServerChat {
 
     public void sendQuit(Message message) {
         try {
+            broadcast(new Message(user, null, "leaves chatting."));
             selfObjectOutputStream.writeObject(message);
             selfObjectOutputStream.flush();
         } catch (IOException e) {
@@ -126,7 +127,7 @@ public class ServerChat {
     public void sendUserList() {
         HashMap<User, ObjectOutputStream> chattingUsers = ServerApp.getChattingUsers();
         synchronized (chattingUsers) {
-            StringBuilder userListMessage = new StringBuilder("현재 채팅방에 있는 사용자: ");
+            StringBuilder userListMessage = new StringBuilder("users in chatting: ");
             for (User user : chattingUsers.keySet()) {
                 userListMessage.append(user.getName()).append(", ");
             }
