@@ -1,19 +1,24 @@
 package com.np.restaurant;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
-import com.np.restaurant.chatting.ServerChat;
 import com.np.restaurant.restaurants.Restaurants;
+
+import java.util.HashMap;
+import java.util.List;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+
 import com.np.restaurant.restaurants.Restaurant;
 import com.np.restaurant.user.PeopleDelta;
 import com.np.restaurant.user.User;
 
 public class ServerApp {
-    private static List<User> loggedInUsers = new ArrayList<User>();
-    private static HashMap<User, ObjectOutputStream> chattingUsers = new HashMap<User, ObjectOutputStream>();
-    private static List<Restaurant> restaurants = new Restaurants().getRestaurants();
+    private static final List<User> loggedInUsers = new ArrayList<>();
+    private static final HashMap<User, ObjectOutputStream> chattingUsers = new HashMap<>();
+    private static final List<Restaurant> restaurants = new Restaurants().getRestaurants();
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(10001)) {
@@ -40,7 +45,7 @@ public class ServerApp {
     }
 
     public static synchronized List<User> getLoggedInUsers() {
-        return new ArrayList<User>(loggedInUsers);
+        return new ArrayList<>(loggedInUsers);
     }
 
     public static synchronized void addChattingUser(User user, ObjectOutputStream objectOutputStream) {
@@ -54,11 +59,11 @@ public class ServerApp {
     }
 
     public static synchronized HashMap<User, ObjectOutputStream> getChattingUsers() {
-        return new HashMap<User, ObjectOutputStream>(chattingUsers);
+        return new HashMap<>(chattingUsers);
     }
 
     public static synchronized List<Restaurant> getRestaurants() {
-        return new ArrayList<Restaurant>(restaurants);
+        return new ArrayList<>(restaurants);
     }
 }
 
