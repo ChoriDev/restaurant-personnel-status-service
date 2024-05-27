@@ -10,7 +10,7 @@ public class User implements Serializable {
     public User(String name) {
         this.name = name;
         this.restaurant = null;
-        this.status = "default";
+        this.status = null;
     }
 
     public String getName() {

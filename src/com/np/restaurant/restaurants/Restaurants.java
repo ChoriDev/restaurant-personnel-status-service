@@ -11,7 +11,8 @@ public class Restaurants implements Serializable {
     public static List<Restaurant> getRestaurants() {
         List<Restaurant> restaurants = new ArrayList<Restaurant>();
         // TODO 상대 경로로 변경하기
-        File rawCsv = new File("src/com/np/restaurant/restaurants/restaurants.csv");
+        File rawCsv = new File(
+                "/home/chori/workspace/project/restaurant-personnel-status-service/src/com/np/restaurant/restaurants/restaurants.csv");
         BufferedReader reader = null;
         String line;
 

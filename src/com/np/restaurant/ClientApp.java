@@ -1,7 +1,6 @@
 package com.np.restaurant;
 
 import com.np.restaurant.restaurants.Restaurant;
-import com.np.restaurant.user.PeopleDelta;
 import com.np.restaurant.ui.LoginScreen;
 import com.np.restaurant.user.User;
 import com.np.restaurant.chatting.Message;
@@ -34,96 +33,6 @@ public class ClientApp {
         }
     }
 
-    public void start() {
-        System.out.println("음식점 인원 현황 서비스입니다.");
-        while (true) {
-            System.out.println("사용할 수 있는 기능을 보려면 '전체 기능'를 입력해주세요.");
-            try {
-                String command = keyboard.readLine();
-                commandSelection(command);
-            } catch (IOException e) {
-                System.err.println("입력 오류: " + e.getMessage());
-            }
-        }
-    }
-
-    private void commandSelection(String selectedCommand) {
-        switch (selectedCommand) {
-            case "전체 기능":
-                showAllCommands();
-                break;
-            case "로그인":
-                if (user == null) {
-                    sendCommand(selectedCommand);
-                    login();
-                } else {
-                    System.out.println("이미 로그인되어 있습니다.");
-                }
-                break;
-            case "로그아웃":
-                if (user != null) {
-                    sendCommand(selectedCommand);
-                    logout();
-                } else {
-                    System.out.println("로그인 후 이용할 수 있습니다.");
-                }
-                break;
-            case "음식점 조회":
-                if (user != null) {
-                    sendCommand(selectedCommand);
-                    showRestaurants();
-                } else {
-                    System.out.println("로그인 후 이용할 수 있습니다.");
-                }
-                break;
-            case "음식점 검색":
-                if (user != null) {
-                    sendCommand(selectedCommand);
-                    searchRestaurant();
-                } else {
-                    System.out.println("로그인 후 이용할 수 있습니다.");
-                }
-                break;
-            case "채팅":
-                if (user != null) {
-                    sendCommand(selectedCommand);
-                    chat();
-                } else {
-                    System.out.println("로그인 후 이용할 수 있습니다.");
-                }
-                break;
-            case "인원":
-                if (user != null) {
-                    sendCommand(selectedCommand);
-                    people();
-                } else {
-                    System.out.println("로그인 후 이용할 수 있습니다.");
-                }
-                break;
-            case "종료":
-                sendCommand(selectedCommand);
-                terminateApp();
-                break;
-            default:
-                System.out.println("없는 기능입니다.");
-                break;
-        }
-    }
-
-    private void sendCommand(String command) {
-        try {
-            objectOutputStream.writeObject(command);
-            objectOutputStream.flush();
-            objectOutputStream.reset();
-        } catch (Exception e) {
-            System.err.println("명령어 전송 오류: " + e.getMessage());
-        }
-    }
-
-    private void showAllCommands() {
-        System.out.println("사용할 수 있는 기능");
-        System.out.println("로그인, 음식점 조회, 채팅, 종료");
-    }
     public boolean login(String name) {
         User user = new User(name);
         try {
@@ -163,53 +72,6 @@ public class ClientApp {
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("음식점 조회 오류: " + e.getMessage());
             return null;
-        }
-    }
- 
-    private void people() {
-        // 음식점명 전송 및 확인
-        String restaurantName = null;
-        String newStatus = null;
-        String prevStatus = null;
-        Boolean successFlag = false;
-        PeopleDelta peopleDelta = null;
-        showRestaurants();
-        try {
-            System.out.println("음식점명을 입력하세요.");
-            restaurantName = keyboard.readLine().trim();
-            objectOutputStream.writeObject(restaurantName);
-            objectOutputStream.flush();
-            objectOutputStream.reset();
-            successFlag = (Boolean) objectInputStream.readObject();
-            if (!successFlag) {
-                System.out.println("음식점이 존재하지 않습니다.");
-                return ;
-            }
-            System.out.println("음식점 확인");
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("음식점명 전송 오류: " + e.getMessage());
-        }
-        try {
-            prevStatus = user.getStatus();
-            System.out.println("현재 사용자 상태: " + prevStatus);
-            System.out.println("사용자 상태 입력: default, going, eating");
-            newStatus = keyboard.readLine().trim();
-            if (!(newStatus.equals("default") || newStatus.equals("going") || newStatus.equals("eating")))
-                return ;
-            user.setDiningAt(newStatus);
-            if (prevStatus.equals("default") && newStatus.equals("going"))
-                peopleDelta = new PeopleDelta(1, 0);
-            if (prevStatus.equals("default") && newStatus.equals("eating"))
-                peopleDelta = new PeopleDelta(0, 1);
-            if (prevStatus.equals("going") && newStatus.equals("eating"))
-                peopleDelta = new PeopleDelta(-1, 1);
-            if (prevStatus.equals("going") && newStatus.equals("default"))
-                peopleDelta = new PeopleDelta(-1, 0);
-            if (prevStatus.equals("eating") && newStatus.equals("default"))
-                peopleDelta = new PeopleDelta(0, -1);
-            objectOutputStream.writeObject(peopleDelta);
-        } catch (IOException | NullPointerException e) {
-            System.err.println("음식점명 전송 오류: " + e.getMessage());
         }
     }
 
