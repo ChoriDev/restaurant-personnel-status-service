@@ -8,7 +8,7 @@ public class Restaurant implements Serializable {
     private String day;
     private String operationTime;
     private String breakTime;
-    private int goingPeopleCount;
+    private int movingPeopleCount;
     private int eatingPeopleCount;
 
     public Restaurant(String category, String name, String day, String operationTime, String breakTime) {
@@ -17,7 +17,7 @@ public class Restaurant implements Serializable {
         this.day = day;
         this.operationTime = operationTime;
         this.breakTime = breakTime;
-        this.goingPeopleCount = 0;
+        this.movingPeopleCount = 0;
         this.eatingPeopleCount = 0;
     }
 
@@ -41,8 +41,8 @@ public class Restaurant implements Serializable {
         return breakTime;
     }
 
-    public int getGoingPeopleCount() {
-        return goingPeopleCount;
+    public int getMovingPeopleCount() {
+        return movingPeopleCount;
     }
 
     public int getEatingPeopleCount() {
@@ -55,12 +55,7 @@ public class Restaurant implements Serializable {
                 + day + ", "
                 + operationTime + ", "
                 + breakTime + ", "
-                + goingPeopleCount + ", "
+                + movingPeopleCount + ", "
                 + eatingPeopleCount;
-    }
-
-    public void changePeopleInfo(int goingDelta, int eatingDelta) {
-        this.goingPeopleCount += goingDelta;
-        this.eatingPeopleCount += eatingDelta;
     }
 }
