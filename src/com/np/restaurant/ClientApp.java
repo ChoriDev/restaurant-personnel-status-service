@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.np.restaurant.chatting.ClientChat;
 import com.np.restaurant.restaurants.Restaurant;
+import com.np.restaurant.user.PeopleDelta;
 import com.np.restaurant.user.User;
 
 public class ClientApp {
@@ -86,6 +87,14 @@ public class ClientApp {
                 if (user != null) {
                     sendCommand(selectedCommand);
                     chat();
+                } else {
+                    System.out.println("로그인 후 이용할 수 있습니다.");
+                }
+                break;
+            case "인원":
+                if (user != null) {
+                    sendCommand(selectedCommand);
+                    people();
                 } else {
                     System.out.println("로그인 후 이용할 수 있습니다.");
                 }
@@ -177,6 +186,53 @@ public class ClientApp {
             }
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("음식점 객체 수신 오류: " + e.getMessage());
+        }
+    }
+
+    private void people() {
+        // 음식점명 전송 및 확인
+        String restaurantName = null;
+        String newStatus = null;
+        String prevStatus = null;
+        Boolean successFlag = false;
+        PeopleDelta peopleDelta = null;
+        showRestaurants();
+        try {
+            System.out.println("음식점명을 입력하세요.");
+            restaurantName = keyboard.readLine().trim();
+            objectOutputStream.writeObject(restaurantName);
+            objectOutputStream.flush();
+            objectOutputStream.reset();
+            successFlag = (Boolean) objectInputStream.readObject();
+            if (!successFlag) {
+                System.out.println("음식점이 존재하지 않습니다.");
+                return ;
+            }
+            System.out.println("음식점 확인");
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("음식점명 전송 오류: " + e.getMessage());
+        }
+        try {
+            prevStatus = user.getStatus();
+            System.out.println("현재 사용자 상태: " + prevStatus);
+            System.out.println("사용자 상태 입력: default, going, eating");
+            newStatus = keyboard.readLine().trim();
+            if (!(newStatus.equals("default") || newStatus.equals("going") || newStatus.equals("eating")))
+                return ;
+            user.setDiningAt(newStatus);
+            if (prevStatus.equals("default") && newStatus.equals("going"))
+                peopleDelta = new PeopleDelta(1, 0);
+            if (prevStatus.equals("default") && newStatus.equals("eating"))
+                peopleDelta = new PeopleDelta(0, 1);
+            if (prevStatus.equals("going") && newStatus.equals("eating"))
+                peopleDelta = new PeopleDelta(-1, 1);
+            if (prevStatus.equals("going") && newStatus.equals("default"))
+                peopleDelta = new PeopleDelta(-1, 0);
+            if (prevStatus.equals("eating") && newStatus.equals("default"))
+                peopleDelta = new PeopleDelta(0, -1);
+            objectOutputStream.writeObject(peopleDelta);
+        } catch (IOException | NullPointerException e) {
+            System.err.println("음식점명 전송 오류: " + e.getMessage());
         }
     }
 

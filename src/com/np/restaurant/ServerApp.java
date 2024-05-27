@@ -7,6 +7,7 @@ import java.util.*;
 import com.np.restaurant.chatting.ServerChat;
 import com.np.restaurant.restaurants.Restaurants;
 import com.np.restaurant.restaurants.Restaurant;
+import com.np.restaurant.user.PeopleDelta;
 import com.np.restaurant.user.User;
 
 public class ServerApp {
@@ -100,6 +101,9 @@ class ClientThread extends Thread {
                     case "채팅":
                         chat();
                         break;
+                    case "인원":
+                        people();
+                        break;
                     case "종료":
                         terminateApp();
                         return; // 스레드 종료
@@ -108,6 +112,7 @@ class ClientThread extends Thread {
                 }
             } catch (IOException | ClassNotFoundException e) {
                 System.err.println("명령어 수신 오류: " + e.getMessage());
+                return ;
             }
         }
     }
@@ -170,6 +175,41 @@ class ClientThread extends Thread {
         }
     }
 
+    private void people() {
+        List<Restaurant> restaurants = ServerApp.getRestaurants();
+        Boolean successFlag = false;
+        String restaurantName = null;
+        String status = null;
+        Restaurant restaurantObject = null;
+        PeopleDelta peopleDelta = null;
+        showRestaurants();
+        // 음식점명 수신 및 확인
+        try {
+            restaurantName = (String) objectInputStream.readObject();
+            System.out.println("음식점명 수신: " + restaurantName);
+            for (Restaurant restaurant : restaurants) {
+                if (restaurant.getName().contains(restaurantName)) {
+                    successFlag = true;
+                    restaurantObject = restaurant;
+                    break;
+                }
+            }
+            objectOutputStream.writeObject(successFlag);
+            objectOutputStream.flush();
+            objectOutputStream.reset();
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("음식점명 확인 오류: " + e.getMessage());
+        }
+        // 인원 변경
+        try {
+            peopleDelta = (PeopleDelta) objectInputStream.readObject();
+            System.out.println("Delta: " + peopleDelta.getGoingPeopleDelta() + ", " + peopleDelta.getEatingPeopleDelta());
+            Objects.requireNonNull(restaurantObject).changePeopleInfo(peopleDelta.getGoingPeopleDelta(), peopleDelta.getEatingPeopleDelta());
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("인원 변경 오류: " + e.getMessage());
+        }
+    }
+
     private void searchRestaurant() {
         String searchWord = null;
         List<Restaurant> restaurants = ServerApp.getRestaurants();
@@ -177,6 +217,7 @@ class ClientThread extends Thread {
 
         try {
             searchWord = (String) objectInputStream.readObject();
+            System.out.println("검색어 수신:" + searchWord);  //test
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("검색어 수신 오류: " + e.getMessage());
         }
@@ -184,6 +225,7 @@ class ClientThread extends Thread {
         for (Restaurant restaurant : restaurants) {
             if (restaurant.getName().contains(searchWord)) {
                 result.add(restaurant);
+                System.out.println(restaurant.getName()); //test
             }
         }
 
