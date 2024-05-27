@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import com.np.restaurant.restaurants.Restaurant;
+import com.np.restaurant.user.PeopleDelta;
 import com.np.restaurant.user.User;
 
 public class ServerApp {
