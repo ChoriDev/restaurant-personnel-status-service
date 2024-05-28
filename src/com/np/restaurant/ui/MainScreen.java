@@ -114,15 +114,24 @@ public class MainScreen extends JFrame {
             JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
             JButton goingButton = new JButton("Going");
-            buttonPanel.add(new JLabel("    "));
+            goingButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    clientApp.people(restaurant.getName(), "going");
+                }
+            });
             buttonPanel.add(goingButton);
 
             JButton eatingButton = new JButton("Eating");
-            buttonPanel.add(new JLabel("    "));
+            eatingButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    clientApp.people(restaurant.getName(), "eating");
+                }
+            });
             buttonPanel.add(eatingButton);
 
             JButton recommendButton = new JButton("Recommend Count");
-            buttonPanel.add(new JLabel("    "));
             buttonPanel.add(recommendButton);
 
             tempPanel.addMouseListener(new MouseAdapter() {
