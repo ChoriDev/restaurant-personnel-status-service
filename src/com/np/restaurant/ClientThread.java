@@ -22,6 +22,7 @@ class ClientThread extends Thread {
     private static final String SEARCH_RESTAURANT = "음식점 검색";
     private static final String CHAT = "채팅";
     private static final String PEOPLE = "인원";
+    private static final String INTEREST = "관심도";
     private static final String TERMINATE = "종료";
 
     private final Socket clientSocket;
@@ -29,12 +30,14 @@ class ClientThread extends Thread {
     private final ObjectInputStream objectInputStream;
     private final ObjectOutputStream objectOutputStream;
     private User user;
+    private final List<Restaurant> restaurants;
 
-    public ClientThread(Socket clientSocket) throws IOException {
+    public ClientThread(Socket clientSocket, List<Restaurant> restaurants) throws IOException {
         this.clientSocket = clientSocket;
         this.reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         this.objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
         this.objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+        this.restaurants = restaurants;
     }
 
     @Override
@@ -60,6 +63,9 @@ class ClientThread extends Thread {
                         break;
                     case PEOPLE:
                         people();
+                        break;
+                    case INTEREST:
+                        interest();
                         break;
                     case TERMINATE:
                         terminateApp();
@@ -198,6 +204,30 @@ class ClientThread extends Thread {
                 clientSocket.close();
         } catch (IOException e) {
             System.err.println("리소스 정리 오류: " + e.getMessage());
+        }
+    }
+
+    private void interest() {
+        try {
+            String restaurantName = (String) objectInputStream.readObject();
+            for (Restaurant restaurant : restaurants) {
+                if (restaurantName.equals(restaurant.getName())) {
+                    new Thread(() -> {
+                        try {
+                            restaurant.changeInterestCount(1);
+                            Thread.sleep(Constants.INTEREST_MAINTAIN_IN_MILLIS);
+                            restaurant.changeInterestCount(-1);
+                        } catch (InterruptedException e) {
+                            System.err.println(e);
+                        }
+                    }).start();
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("입출력 오류: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.err.println("클래스를 찾을 수 없습니다: " + e.getMessage());
         }
     }
 }

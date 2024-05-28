@@ -27,7 +27,7 @@ public class ServerApp {
                 Socket clientSocket = serverSocket.accept();
                 InetAddress inetAddress = clientSocket.getInetAddress();
                 System.out.println(inetAddress.getHostAddress() + "에서 클라이언트가 접속했습니다.");
-                new ClientThread(clientSocket).start();
+                new ClientThread(clientSocket, restaurants).start();
             }
         } catch (IOException e) {
             System.err.println("서버 오류: " + e.getMessage());
