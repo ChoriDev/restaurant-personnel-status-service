@@ -10,6 +10,7 @@ public class Restaurant implements Serializable {
     private String breakTime;
     private int goingPeopleCount;
     private int eatingPeopleCount;
+    private int interestCount;
 
     public Restaurant(String category, String name, String day, String operationTime, String breakTime) {
         this.category = category;
@@ -19,6 +20,7 @@ public class Restaurant implements Serializable {
         this.breakTime = breakTime;
         this.goingPeopleCount = 0;
         this.eatingPeopleCount = 0;
+        this.interestCount = 0;
     }
 
     public String getCategory() {
@@ -56,11 +58,16 @@ public class Restaurant implements Serializable {
                 + operationTime + ", "
                 + breakTime + ", "
                 + goingPeopleCount + ", "
-                + eatingPeopleCount;
+                + eatingPeopleCount + ", "
+                + interestCount;
     }
 
     public void changePeopleInfo(int goingDelta, int eatingDelta) {
         this.goingPeopleCount += goingDelta;
         this.eatingPeopleCount += eatingDelta;
+    }
+
+    public void changeInterestCount(int interestDelta) {
+        this.interestCount += interestDelta;
     }
 }

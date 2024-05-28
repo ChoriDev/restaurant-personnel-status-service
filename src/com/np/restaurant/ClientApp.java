@@ -83,7 +83,6 @@ public class ClientApp {
             objectOutputStream.writeObject(searchWord);
             objectOutputStream.flush();
             objectOutputStream.reset();
-
             return (List<Restaurant>) objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("음식점 검색 오류: " + e.getMessage());
@@ -98,6 +97,7 @@ public class ClientApp {
     public void sendChatMessage(String content) {
         try {
             Message message = new Message(user, null, content);
+            interest(content);
             objectOutputStream.writeObject(message);
             objectOutputStream.flush();
             objectOutputStream.reset();
@@ -117,6 +117,26 @@ public class ClientApp {
             objectOutputStream.reset();
         } catch (IOException e) {
             System.err.println("명령어 전송 오류: " + e.getMessage());
+        }
+    }
+
+    public void interest(String content) {
+        List<Restaurant> restaurants = fetchRestaurants();
+        for (Restaurant restaurant : restaurants) {
+            String restaurantName = restaurant.getName();
+            if (content.contains(restaurantName) && !user.getInterestedRestaurants().contains(restaurantName)) {
+                new Thread(() -> {
+                    try {
+                        user.addInterestedRestaurant(restaurantName);
+                        objectOutputStream.writeObject(restaurantName);
+                        Thread.sleep(Constants.INTEREST_MAINTAIN_IN_MILLIS);
+                        user.removeInterestedRestaurant(restaurantName);
+                        System.out.println(restaurantName + "이 관심 목록에서 제거되었습니다.");
+                    } catch (IOException | InterruptedException e) {
+                        System.err.println(e);
+                    }
+                }).start();
+            }
         }
     }
 
