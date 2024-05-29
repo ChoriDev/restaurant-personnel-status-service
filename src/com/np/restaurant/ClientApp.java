@@ -97,10 +97,10 @@ public class ClientApp {
     public void sendChatMessage(String content) {
         try {
             Message message = new Message(user, null, content);
-            interest(content);
             objectOutputStream.writeObject(message);
             objectOutputStream.flush();
             objectOutputStream.reset();
+            interest(content);
         } catch (IOException e) {
             System.err.println("채팅 메시지 전송 오류: " + e.getMessage());
         }
@@ -121,12 +121,12 @@ public class ClientApp {
     }
 
     public void interest(String content) {
-        boolean findFlag = false;
+        // TODO: restaurants를 fetch가 아닌 다른 형식으로 가져와야 함. 채팅 도중 다른 행동을 할 수 없음.
         List<Restaurant> restaurants = fetchRestaurants();
+        sendCommand("관심도");
         for (Restaurant restaurant : restaurants) {
             String restaurantName = restaurant.getName();
             if (content.contains(restaurantName) && !user.getInterestedRestaurants().contains(restaurantName)) {
-                findFlag = true;
                 user.addInterestedRestaurant(restaurantName);
                 try {
                     objectOutputStream.writeObject(restaurantName);
@@ -142,15 +142,13 @@ public class ClientApp {
                         System.err.println(e);
                     }
                 }).start();
-                break;
+                return ;
             }
         }
-        if (findFlag == false) {
-            try {
-                objectOutputStream.writeObject(null);
-            } catch (IOException e) {
-                System.out.println(e);
-            }
+        try {
+            objectOutputStream.writeObject(null);
+        } catch (IOException e) {
+            System.out.println(e);
         }
     }
 

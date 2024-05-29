@@ -1,22 +1,28 @@
 package com.np.restaurant.chatting;
 
+import com.np.restaurant.Constants;
 import com.np.restaurant.ServerApp;
+import com.np.restaurant.restaurants.Restaurant;
 import com.np.restaurant.user.User;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.List;
 
 public class ServerChat {
     private final User user;
     private final ObjectInputStream objectInputStream;
     private final ObjectOutputStream selfObjectOutputStream;
+    private final List<Restaurant> restaurants;
 
-    public ServerChat(User user, ObjectInputStream objectInputStream, ObjectOutputStream selfObjectOutputStream) {
+    public ServerChat(User user, ObjectInputStream objectInputStream, ObjectOutputStream selfObjectOutputStream, List<Restaurant> restaurants) {
         this.user = user;
         this.objectInputStream = objectInputStream;
         this.selfObjectOutputStream = selfObjectOutputStream;
+        this.restaurants = restaurants;
+        // 채팅 수신, broadcast 이후 관심도 로직을 실행하기 위하여 restaurants 정보를 ServerChat Class에 추가하였음.
     }
 
     public void start() {
@@ -35,6 +41,7 @@ public class ServerChat {
                 } else {
                     broadcast(message);
                 }
+                interest(); /// 채팅메시지 수신 & 송신 이후 관심도 로직 실행
             }
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error in ServerChat: " + e.getMessage());
@@ -133,6 +140,32 @@ public class ServerChat {
             }
             userListMessage.delete(userListMessage.length() - 2, userListMessage.length()); // 마지막 쉼표 및 공백 제거
             broadcast(new Message(user, null, userListMessage.toString()));
+        }
+    }
+
+    private void interest() {
+        String restaurantName = null;
+        try {
+            restaurantName = (String) objectInputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println(e);
+        }
+        if (restaurantName == null) {
+            return;
+        }
+        for (Restaurant restaurant : restaurants) {
+            if (restaurantName.equals(restaurant.getName())) {
+                restaurant.changeInterestCount(1);
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(Constants.INTEREST_MAINTAIN_IN_MILLIS);
+                        restaurant.changeInterestCount(-1);
+                    } catch (InterruptedException e) {
+                        System.err.println(e);
+                    }
+                }).start();
+                break;
+            }
         }
     }
 }

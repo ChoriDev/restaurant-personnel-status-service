@@ -64,9 +64,6 @@ class ClientThread extends Thread {
                     case PEOPLE:
                         people();
                         break;
-                    case INTEREST:
-                        interest();
-                        break;
                     case TERMINATE:
                         terminateApp();
                         return;
@@ -111,7 +108,7 @@ class ClientThread extends Thread {
     private void chat() {
         try {
             ServerApp.addChattingUser(user, objectOutputStream);
-            ServerChat serverChat = new ServerChat(user, objectInputStream, objectOutputStream);
+            ServerChat serverChat = new ServerChat(user, objectInputStream, objectOutputStream, restaurants);
             serverChat.start();
         } finally {
             ServerApp.removeChattingUser(user);
@@ -204,32 +201,6 @@ class ClientThread extends Thread {
                 clientSocket.close();
         } catch (IOException e) {
             System.err.println("리소스 정리 오류: " + e.getMessage());
-        }
-    }
-
-    private void interest() {
-        String restaurantName = null;
-        try {
-            restaurantName = (String) objectInputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println(e);
-        }
-        if (restaurantName == null) {
-            return;
-        }
-        for (Restaurant restaurant : restaurants) {
-            if (restaurantName.equals(restaurant.getName())) {
-                new Thread(() -> {
-                    try {
-                        restaurant.changeInterestCount(1);
-                        Thread.sleep(Constants.INTEREST_MAINTAIN_IN_MILLIS);
-                        restaurant.changeInterestCount(-1);
-                    } catch (InterruptedException e) {
-                        System.err.println(e);
-                    }
-                }).start();
-                break;
-            }
         }
     }
 }
