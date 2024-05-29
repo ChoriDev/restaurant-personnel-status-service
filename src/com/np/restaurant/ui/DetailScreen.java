@@ -15,6 +15,8 @@ public class DetailScreen extends JFrame {
 
         // 사진이 추가되면 좋을 듯
 
+        mainPanel.add(Box.createVerticalStrut(20));
+
         JLabel nameLabel = new JLabel(restaurant.getName() + " / " + restaurant.getCategory());
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         mainPanel.add(nameLabel);

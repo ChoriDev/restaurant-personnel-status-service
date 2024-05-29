@@ -104,26 +104,11 @@ public class MainScreen extends JFrame {
 
     private void updateRestaurantPanel(List<Restaurant> restaurants) {
         restaurantPanel.removeAll();
-        restaurantPanel.setLayout(new GridLayout(restaurants.size()*2, 1));
-
+        restaurantPanel.setLayout(new GridLayout(restaurants.size()*3, 1));
         for (Restaurant restaurant : restaurants) {
             JPanel tempPanel = new JPanel(new BorderLayout());
             JLabel nameLabel = new JLabel(restaurant.getName());
             tempPanel.add(nameLabel, BorderLayout.WEST);
-
-//            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-//
-//            JButton goingButton = new JButton("Going");
-//            buttonPanel.add(new JLabel("    "));
-//            buttonPanel.add(goingButton);
-//
-//            JButton eatingButton = new JButton("Eating");
-//            buttonPanel.add(new JLabel("    "));
-//            buttonPanel.add(eatingButton);
-//
-//            JButton recommendButton = new JButton("Recommend Count");
-//            buttonPanel.add(new JLabel("    "));
-//            buttonPanel.add(recommendButton);
 
             JPanel buttonPanel = new JPanel();
             buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
@@ -152,6 +137,7 @@ public class MainScreen extends JFrame {
             tempPanel.add(buttonPanel, BorderLayout.EAST);
             restaurantPanel.add(Box.createVerticalStrut(10));
             restaurantPanel.add(tempPanel);
+            restaurantPanel.add(Box.createVerticalGlue());
         }
 
         restaurantPanel.revalidate();
