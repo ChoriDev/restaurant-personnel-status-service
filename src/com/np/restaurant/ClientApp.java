@@ -145,7 +145,7 @@ public class ClientApp {
             if (!(newStatus.equals("default") || newStatus.equals("going") || newStatus.equals("eating")))
                 return;
 
-            user.setDiningAt(newStatus);
+            user.setStatus(newStatus);
             if (prevStatus.equals("default") && newStatus.equals("going"))
                 peopleDelta = new PeopleDelta(1, 0);
             if (prevStatus.equals("default") && newStatus.equals("eating"))

@@ -29,7 +29,7 @@ public class User implements Serializable {
         this.restaurant = restaurant;
     }
 
-    public void setDiningAt(String status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 }
