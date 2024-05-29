@@ -208,26 +208,28 @@ class ClientThread extends Thread {
     }
 
     private void interest() {
+        String restaurantName = null;
         try {
-            String restaurantName = (String) objectInputStream.readObject();
-            for (Restaurant restaurant : restaurants) {
-                if (restaurantName.equals(restaurant.getName())) {
-                    new Thread(() -> {
-                        try {
-                            restaurant.changeInterestCount(1);
-                            Thread.sleep(Constants.INTEREST_MAINTAIN_IN_MILLIS);
-                            restaurant.changeInterestCount(-1);
-                        } catch (InterruptedException e) {
-                            System.err.println(e);
-                        }
-                    }).start();
-                    break;
-                }
+            restaurantName = (String) objectInputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println(e);
+        }
+        if (restaurantName == null) {
+            return;
+        }
+        for (Restaurant restaurant : restaurants) {
+            if (restaurantName.equals(restaurant.getName())) {
+                new Thread(() -> {
+                    try {
+                        restaurant.changeInterestCount(1);
+                        Thread.sleep(Constants.INTEREST_MAINTAIN_IN_MILLIS);
+                        restaurant.changeInterestCount(-1);
+                    } catch (InterruptedException e) {
+                        System.err.println(e);
+                    }
+                }).start();
+                break;
             }
-        } catch (IOException e) {
-            System.err.println("입출력 오류: " + e.getMessage());
-        } catch (ClassNotFoundException e) {
-            System.err.println("클래스를 찾을 수 없습니다: " + e.getMessage());
         }
     }
 }

@@ -31,7 +31,7 @@ public class ClientChat {
         String line = null;
         try {
             while ((line = keyboard.readLine()) != null) {
-                message.setContent(line);
+                //message.setContent(line);
                 objectOutputStream.writeObject(message);
                 objectOutputStream.flush();
                 objectOutputStream.reset();

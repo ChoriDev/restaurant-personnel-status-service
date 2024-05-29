@@ -121,21 +121,35 @@ public class ClientApp {
     }
 
     public void interest(String content) {
+        boolean findFlag = false;
         List<Restaurant> restaurants = fetchRestaurants();
         for (Restaurant restaurant : restaurants) {
             String restaurantName = restaurant.getName();
             if (content.contains(restaurantName) && !user.getInterestedRestaurants().contains(restaurantName)) {
+                findFlag = true;
+                user.addInterestedRestaurant(restaurantName);
+                try {
+                    objectOutputStream.writeObject(restaurantName);
+                } catch (IOException e) {
+                    System.out.println(e);
+                }
                 new Thread(() -> {
                     try {
-                        user.addInterestedRestaurant(restaurantName);
-                        objectOutputStream.writeObject(restaurantName);
                         Thread.sleep(Constants.INTEREST_MAINTAIN_IN_MILLIS);
                         user.removeInterestedRestaurant(restaurantName);
                         System.out.println(restaurantName + "이 관심 목록에서 제거되었습니다.");
-                    } catch (IOException | InterruptedException e) {
+                    } catch (InterruptedException e) {
                         System.err.println(e);
                     }
                 }).start();
+                break;
+            }
+        }
+        if (findFlag == false) {
+            try {
+                objectOutputStream.writeObject(null);
+            } catch (IOException e) {
+                System.out.println(e);
             }
         }
     }
