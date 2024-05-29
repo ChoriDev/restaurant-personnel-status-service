@@ -8,15 +8,17 @@ public class Restaurant implements Serializable {
     private String day;
     private String operationTime;
     private String breakTime;
+    private String seatNum;
     private int movingPeopleCount;
     private int eatingPeopleCount;
 
-    public Restaurant(String category, String name, String day, String operationTime, String breakTime) {
+    public Restaurant(String category, String name, String day, String operationTime, String breakTime, String seatNum) {
         this.category = category;
         this.name = name;
         this.day = day;
         this.operationTime = operationTime;
         this.breakTime = breakTime;
+        this.seatNum = seatNum;
         this.movingPeopleCount = 0;
         this.eatingPeopleCount = 0;
     }
@@ -39,6 +41,10 @@ public class Restaurant implements Serializable {
 
     public String getBreakTime() {
         return breakTime;
+    }
+
+    public String getSeatNum() {
+        return seatNum;
     }
 
     public int getMovingPeopleCount() {

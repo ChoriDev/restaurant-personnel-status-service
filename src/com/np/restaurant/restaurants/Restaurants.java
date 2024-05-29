@@ -12,7 +12,8 @@ public class Restaurants implements Serializable {
         List<Restaurant> restaurants = new ArrayList<Restaurant>();
         // TODO 상대 경로로 변경하기
         File rawCsv = new File(
-                "/home/chori/workspace/project/restaurant-personnel-status-service/src/com/np/restaurant/restaurants/restaurants.csv");
+//                "/home/chori/workspace/project/restaurant-personnel-status-service/src/com/np/restaurant/restaurants/restaurants.csv");
+                "C:\\Program Files\\Java\\NetworkProgramming\\restaurant-personnel-status-service\\src\\com\\np\\restaurant\\restaurants\\restaurants.csv");
         BufferedReader reader = null;
         String line;
 
@@ -25,7 +26,9 @@ public class Restaurants implements Serializable {
                         tokenArray[1], // 음식점명
                         tokenArray[2], // 운영 요일
                         tokenArray[3], // 운영 시간
-                        tokenArray[4]); // 브레이크 타임
+                        tokenArray[4], // 브레이크 타임
+                        tokenArray[5]  // 좌석수
+                );
                 restaurants.add(restaurant);
             }
         } catch (Exception e) {

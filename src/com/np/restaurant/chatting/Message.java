@@ -26,6 +26,10 @@ public class Message implements Serializable {
         return content;
     }
 
+    public void setContent(String content) { content = content;}
+
+
+
     @Override
     public String toString() {
         return "Message{" +

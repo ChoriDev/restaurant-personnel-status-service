@@ -23,7 +23,7 @@ public class MainScreen extends JFrame {
 
         setTitle("Restaurant List");
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setSize(500, 500);
+        setSize(700, 500);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
@@ -104,26 +104,42 @@ public class MainScreen extends JFrame {
 
     private void updateRestaurantPanel(List<Restaurant> restaurants) {
         restaurantPanel.removeAll();
-        restaurantPanel.setLayout(new GridLayout(restaurants.size(), 1));
+        restaurantPanel.setLayout(new GridLayout(restaurants.size()*2, 1));
 
         for (Restaurant restaurant : restaurants) {
             JPanel tempPanel = new JPanel(new BorderLayout());
             JLabel nameLabel = new JLabel(restaurant.getName());
             tempPanel.add(nameLabel, BorderLayout.WEST);
 
-            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+//            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+//
+//            JButton goingButton = new JButton("Going");
+//            buttonPanel.add(new JLabel("    "));
+//            buttonPanel.add(goingButton);
+//
+//            JButton eatingButton = new JButton("Eating");
+//            buttonPanel.add(new JLabel("    "));
+//            buttonPanel.add(eatingButton);
+//
+//            JButton recommendButton = new JButton("Recommend Count");
+//            buttonPanel.add(new JLabel("    "));
+//            buttonPanel.add(recommendButton);
 
-            JButton goingButton = new JButton("Going");
-            buttonPanel.add(new JLabel("    "));
-            buttonPanel.add(goingButton);
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
-            JButton eatingButton = new JButton("Eating");
-            buttonPanel.add(new JLabel("    "));
-            buttonPanel.add(eatingButton);
+            JLabel goingNum = new JLabel("Going : nowGoing");
+            JLabel eatingNum = new JLabel("Eating : nowEating / " + restaurant.getSeatNum());
+            JLabel recommendNum = new JLabel("Recommend : recommend Count");
 
-            JButton recommendButton = new JButton("Recommend Count");
-            buttonPanel.add(new JLabel("    "));
-            buttonPanel.add(recommendButton);
+            buttonPanel.add(Box.createHorizontalGlue());
+            buttonPanel.add(goingNum);
+            buttonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+            buttonPanel.add(eatingNum);
+            buttonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+            buttonPanel.add(recommendNum);
+            buttonPanel.add(Box.createHorizontalGlue());
+
 
             tempPanel.addMouseListener(new MouseAdapter() {
                 @Override
@@ -134,6 +150,7 @@ public class MainScreen extends JFrame {
             });
 
             tempPanel.add(buttonPanel, BorderLayout.EAST);
+            restaurantPanel.add(Box.createVerticalStrut(10));
             restaurantPanel.add(tempPanel);
         }
 

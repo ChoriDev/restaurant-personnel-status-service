@@ -27,6 +27,24 @@ public class DetailScreen extends JFrame {
         breakTimeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         mainPanel.add(breakTimeLabel);
 
+        mainPanel.add(Box.createVerticalStrut(10));
+
+        JButton goingButton = new JButton("Going");
+        goingButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainPanel.add(goingButton);
+
+        mainPanel.add(Box.createVerticalStrut(10));
+
+        JButton eatingButton = new JButton("Eating");
+        eatingButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainPanel.add(eatingButton);
+
+        mainPanel.add(Box.createVerticalStrut(10));
+
+        JButton recommendButton = new JButton("Recommend");
+        recommendButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainPanel.add(recommendButton);
+
         // 객체의 모든 요소를 참조하는 방법
         // for (Field field : restaurant.getClass().getDeclaredFields()) {
         // field.setAccessible(true);
