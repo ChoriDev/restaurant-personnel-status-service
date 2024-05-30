@@ -23,7 +23,7 @@ public class MainScreen extends JFrame {
 
         setTitle("Restaurant List");
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setSize(500, 500);
+        setSize(700, 500);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
@@ -62,6 +62,7 @@ public class MainScreen extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 refreshRestaurants();
+                searchField.setText("");
             }
         });
 
@@ -83,7 +84,7 @@ public class MainScreen extends JFrame {
         setVisible(true);
     }
 
-    private void refreshRestaurants() {
+    public void refreshRestaurants() {
         List<Restaurant> restaurants = clientApp.fetchRestaurants();
         if (restaurants == null) {
             restaurants = List.of();
@@ -104,46 +105,41 @@ public class MainScreen extends JFrame {
 
     private void updateRestaurantPanel(List<Restaurant> restaurants) {
         restaurantPanel.removeAll();
-        restaurantPanel.setLayout(new GridLayout(restaurants.size(), 1));
+        restaurantPanel.setLayout(new GridLayout(restaurants.size() * 3, 1));
 
         for (Restaurant restaurant : restaurants) {
             JPanel tempPanel = new JPanel(new BorderLayout());
             JLabel nameLabel = new JLabel(restaurant.getName());
             tempPanel.add(nameLabel, BorderLayout.WEST);
 
-            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
-            JButton goingButton = new JButton("Going");
-            goingButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    clientApp.people(restaurant.getName(), "going");
-                }
-            });
-            buttonPanel.add(goingButton);
+            JLabel goingNum = new JLabel("Going : " + restaurant.getGoingPeopleCount());
+            JLabel eatingNum = new JLabel(
+                    "Eating : " + restaurant.getEatingPeopleCount() + " / " + restaurant.getSeatNum());
+            JLabel recommendNum = new JLabel("Recommend : recommend Count");
 
-            JButton eatingButton = new JButton("Eating");
-            eatingButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    clientApp.people(restaurant.getName(), "eating");
-                }
-            });
-            buttonPanel.add(eatingButton);
-
-            JButton recommendButton = new JButton("Recommend Count");
-            buttonPanel.add(recommendButton);
+            buttonPanel.add(Box.createHorizontalGlue());
+            buttonPanel.add(goingNum);
+            buttonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+            buttonPanel.add(eatingNum);
+            buttonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+            buttonPanel.add(recommendNum);
+            buttonPanel.add(Box.createHorizontalGlue());
 
             tempPanel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    JFrame detailScreen = new DetailScreen(restaurant);
+                    JFrame detailScreen = new DetailScreen(clientApp, restaurant, MainScreen.this);
                     detailScreen.setVisible(true);
                 }
             });
 
             tempPanel.add(buttonPanel, BorderLayout.EAST);
+            restaurantPanel.add(Box.createVerticalStrut(10));
             restaurantPanel.add(tempPanel);
+            restaurantPanel.add(Box.createVerticalGlue());
         }
 
         restaurantPanel.revalidate();

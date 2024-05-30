@@ -23,7 +23,8 @@ public class Restaurants implements Serializable {
                         tokenArray[1], // 음식점명
                         tokenArray[2], // 운영 요일
                         tokenArray[3], // 운영 시간
-                        tokenArray[4]); // 브레이크 타임
+                        tokenArray[4], // 브레이크 타임
+                        tokenArray[5]); // 좌석수
                 restaurants.add(restaurant);
             }
         } catch (Exception e) {

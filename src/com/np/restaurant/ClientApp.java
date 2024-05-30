@@ -13,7 +13,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.List;
-import java.util.Scanner;
 
 public class ClientApp {
     private Socket socket;
@@ -158,6 +157,8 @@ public class ClientApp {
                 peopleDelta = new PeopleDelta(0, -1);
 
             objectOutputStream.writeObject(peopleDelta);
+            objectOutputStream.flush();
+            objectOutputStream.reset();
         } catch (IOException | NullPointerException e) {
             System.err.println("음식점명 전송 오류: " + e.getMessage());
         }
