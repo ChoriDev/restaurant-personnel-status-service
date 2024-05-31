@@ -114,35 +114,25 @@ class ClientThread extends Thread {
 
     private void people() {
         List<Restaurant> restaurants = ServerApp.getRestaurants();
-        Boolean successFlag = false;
+        Boolean hasRestaurantChanged = false;
         String restaurantName = null;
-        // String status = null;
+        String status = null;
         Restaurant restaurantObject = null;
         PeopleDelta peopleDelta = null;
-        // 음식점명 수신 및 확인
+
+        // 삭제: 음식점명 수신 및 확인
+
         try {
-            restaurantName = (String) objectInputStream.readObject();
-            System.out.println("음식점명 수신: " + restaurantName);
-            for (Restaurant restaurant : restaurants) {
-                if (restaurant.getName().equals(restaurantName)) {
-                    successFlag = true;
-                    restaurantObject = restaurant;
-                    break;
-                }
+            hasRestaurantChanged = (Boolean) objectInputStream.readObject();
+            if (hasRestaurantChanged) { // 이전 음식점과 다른 경우 기존 및 새로운 음식점 인원을 바꿔야 함 (2번 수신)
+                peopleDelta = (PeopleDelta) objectInputStream.readObject();
+                System.out.println("Delta: " + peopleDelta.getGoingPeopleDelta() + ", " + peopleDelta.getEatingPeopleDelta());
+                restaurantObject.changePeopleInfo(peopleDelta);
             }
-            objectOutputStream.writeObject(successFlag);
-            objectOutputStream.flush();
-            objectOutputStream.reset();
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("음식점명 확인 오류: " + e.getMessage());
-        }
-        // 인원 변경
-        try {
             peopleDelta = (PeopleDelta) objectInputStream.readObject();
-            System.out
-                    .println("Delta: " + peopleDelta.getGoingPeopleDelta() + ", " + peopleDelta.getEatingPeopleDelta());
-            Objects.requireNonNull(restaurantObject).changePeopleInfo(peopleDelta.getGoingPeopleDelta(),
-                    peopleDelta.getEatingPeopleDelta());
+            System.out.println("Delta: " + peopleDelta.getGoingPeopleDelta() + ", " + peopleDelta.getEatingPeopleDelta());
+            restaurantObject.changePeopleInfo(peopleDelta);
+
             System.out.println(ServerApp.getRestaurants());
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("인원 변경 오류: " + e.getMessage());

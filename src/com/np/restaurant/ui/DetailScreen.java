@@ -2,6 +2,7 @@ package com.np.restaurant.ui;
 
 import com.np.restaurant.ClientApp;
 import com.np.restaurant.restaurants.Restaurant;
+import com.np.restaurant.user.User;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,7 +41,7 @@ public class DetailScreen extends JFrame {
         goingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                clientApp.people(restaurant.getName(), "going");
+                clientApp.people(restaurant.getName(), User.GOING);
                 mainScreen.refreshRestaurants();
             }
         });
@@ -53,7 +54,7 @@ public class DetailScreen extends JFrame {
         eatingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                clientApp.people(restaurant.getName(), "eating");
+                clientApp.people(restaurant.getName(), User.EATING);
                 mainScreen.refreshRestaurants();
             }
         });
