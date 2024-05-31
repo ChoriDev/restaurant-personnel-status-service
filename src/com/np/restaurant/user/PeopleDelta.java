@@ -18,6 +18,10 @@ public class PeopleDelta implements Serializable {
         return eatingPeopleDelta;
     }
 
+    public String getRestaurantName() {
+        return restaurantName;
+    }
+
     private String restaurantName;
     private int goingPeopleDelta;
     private int eatingPeopleDelta;

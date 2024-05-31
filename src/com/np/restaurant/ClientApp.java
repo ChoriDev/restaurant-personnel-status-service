@@ -124,13 +124,12 @@ public class ClientApp {
         int prevStatus = 0;
         String prevRestaurantName = null;
         Boolean hasRestaurantChanged = false;
-        PeopleDelta peopleDelta = null;
         try {
             prevStatus = user.getStatus();
             prevRestaurantName = user.getRestaurant();
-            System.out.println("이전 사용자 상태: " + prevStatus);
-            System.out.println("이전 음식점: " + prevRestaurantName);
-
+            System.out.println("상태: " + prevStatus + " -> " + newStatus);
+            System.out.println("음식점: " + prevRestaurantName + " -> " + newRestaurantName);
+            
             // 음식점 변경여부 확인
             if (prevStatus == User.DEFAULT || newRestaurantName.equals(prevRestaurantName))
                 hasRestaurantChanged = false;
@@ -140,25 +139,45 @@ public class ClientApp {
             objectOutputStream.flush();
             objectOutputStream.reset();
 
-            if (!hasRestaurantChanged) { // 음식점이 변경되지 않았거나, Default 상태인 경우
-                
+            if (newRestaurantName.equals(prevRestaurantName) && prevStatus == newStatus) { // 취소하는 경우
+                user.setStatus(User.DEFAULT);
+                user.setRestaurant(null);
+            } else { // 새로운 음식 및 상태 갱신
+                user.setStatus(newStatus);
+                user.setRestaurant(newRestaurantName);
             }
-            else { // 음식점이 변경된 경우
+
+            if (!hasRestaurantChanged) { // Default 혹은 음식점 변화 X
+                if (prevStatus == User.DEFAULT && newStatus == User.GOING) {
+                    objectOutputStream.writeObject(new PeopleDelta(newRestaurantName, 1, 0));
+                } else if (prevStatus == User.DEFAULT && newStatus == User.EATING) {
+                    objectOutputStream.writeObject(new PeopleDelta(newRestaurantName, 0, 1));
+                } else if (prevStatus == User.GOING && newStatus == User.GOING) {
+                    objectOutputStream.writeObject(new PeopleDelta(newRestaurantName, -1, 0));
+                } else if (prevStatus == User.GOING && newStatus == User.EATING) {
+                    objectOutputStream.writeObject(new PeopleDelta(newRestaurantName, -1, 1));
+                } else if (prevStatus == User.EATING && newStatus == User.GOING) {
+                    objectOutputStream.writeObject(new PeopleDelta(newRestaurantName, 1, -1));
+                } else if (prevStatus == User.EATING && newStatus == User.EATING) {
+                    objectOutputStream.writeObject(new PeopleDelta(newRestaurantName, 0, -1));
+                }
+            }
+            else { // 음식점 변화
+                if (prevStatus == User.GOING && newStatus == User.GOING) {
+                    objectOutputStream.writeObject(new PeopleDelta(prevRestaurantName, -1, 0));
+                    objectOutputStream.writeObject(new PeopleDelta(newRestaurantName, 1, 0));
+                } else if (prevStatus == User.GOING && newStatus == User.EATING) {
+                    objectOutputStream.writeObject(new PeopleDelta(prevRestaurantName, -1, 0));
+                    objectOutputStream.writeObject(new PeopleDelta(newRestaurantName, 0, 1));
+                } else if (prevStatus == User.EATING && newStatus == User.GOING) {
+                    objectOutputStream.writeObject(new PeopleDelta(prevRestaurantName, 0, -1));
+                    objectOutputStream.writeObject(new PeopleDelta(newRestaurantName, 1, 0));
+                } else if (prevStatus == User.EATING && newStatus == User.EATING) {
+                    objectOutputStream.writeObject(new PeopleDelta(prevRestaurantName, 0, -1));
+                    objectOutputStream.writeObject(new PeopleDelta(newRestaurantName, 0, 1));
+                }
 
             }
-
-            if (prevStatus == User.DEFAULT && newStatus == User.GOING)
-                peopleDelta = new PeopleDelta(1, 0);
-            if (prevStatus == User.DEFAULT && newStatus == User.EATING)
-                peopleDelta = new PeopleDelta(0, 1);
-            if (prevStatus == User.GOING && newStatus == User.EATING)
-                peopleDelta = new PeopleDelta(-1, 1);
-            if (prevStatus == User.GOING && newStatus == User.DEFAULT)
-                peopleDelta = new PeopleDelta(-1, 0);
-            if (prevStatus == User.EATING && newStatus == User.DEFAULT)
-                peopleDelta = new PeopleDelta(0, -1);
-
-            objectOutputStream.writeObject(peopleDelta);
             objectOutputStream.flush();
             objectOutputStream.reset();
         } catch (IOException | NullPointerException e) {

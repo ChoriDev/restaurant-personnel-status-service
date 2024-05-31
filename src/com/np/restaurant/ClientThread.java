@@ -12,6 +12,7 @@ import java.util.Objects;
 
 import com.np.restaurant.chatting.ServerChat;
 import com.np.restaurant.restaurants.Restaurant;
+import com.np.restaurant.restaurants.Restaurants;
 import com.np.restaurant.user.PeopleDelta;
 import com.np.restaurant.user.User;
 
@@ -119,6 +120,8 @@ class ClientThread extends Thread {
         String status = null;
         Restaurant restaurantObject = null;
         PeopleDelta peopleDelta = null;
+        
+        System.out.println(restaurants);
 
         // 삭제: 음식점명 수신 및 확인
 
@@ -127,11 +130,11 @@ class ClientThread extends Thread {
             if (hasRestaurantChanged) { // 이전 음식점과 다른 경우 기존 및 새로운 음식점 인원을 바꿔야 함 (2번 수신)
                 peopleDelta = (PeopleDelta) objectInputStream.readObject();
                 System.out.println("Delta: " + peopleDelta.getGoingPeopleDelta() + ", " + peopleDelta.getEatingPeopleDelta());
-                restaurantObject.changePeopleInfo(peopleDelta);
+                Restaurant.findRestaurantByName(restaurants, peopleDelta.getRestaurantName()).changePeopleInfo(peopleDelta);
             }
             peopleDelta = (PeopleDelta) objectInputStream.readObject();
             System.out.println("Delta: " + peopleDelta.getGoingPeopleDelta() + ", " + peopleDelta.getEatingPeopleDelta());
-            restaurantObject.changePeopleInfo(peopleDelta);
+            Restaurant.findRestaurantByName(restaurants, peopleDelta.getRestaurantName()).changePeopleInfo(peopleDelta);
 
             System.out.println(ServerApp.getRestaurants());
         } catch (IOException | ClassNotFoundException e) {
