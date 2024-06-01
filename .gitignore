@@ -1,0 +1,40 @@
+# IntelliJ IDEA 관련
+.idea/
+*.iml
+
+# VSCode 관련
+.vscode/
+
+# 빌드 디렉토리
+/bin/
+out/
+
+# OS 관련
+.DS_Store
+Thumbs.db
+
+# Log 파일
+*.log
+*.log.*
+*.out
+*.out.*
+
+# 환경 설정 파일
+.env
+
+# Gradle 관련
+/build
+.gradle/
+/gradle/
+/gradle.properties
+gradle-app.setting
+gradlew
+gradlew.bat
+
+# Maven 관련
+/target
+/logs
+/coverage
+/.mvn/timing.properties
+/.mvn/wrapper/maven-wrapper.jar
+/.mvn/wrapper/maven-wrapper.properties
