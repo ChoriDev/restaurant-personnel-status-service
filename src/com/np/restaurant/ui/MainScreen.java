@@ -25,7 +25,7 @@ public class MainScreen extends JFrame {
 
         setTitle("Restaurant List");
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setSize(700, 500);
+        setSize(700, 700);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
@@ -36,8 +36,9 @@ public class MainScreen extends JFrame {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new GridLayout(4, 1));
 
-
+        // 가장 위에 현재 유저의 상태를 나타냄
         JLabel userState = new JLabel(getUserStateText(clientApp.getUser().getStatus(), clientApp.getUser().getRestaurant()));
+        userState.setHorizontalAlignment(SwingConstants.CENTER);
         searchField = new JTextField(20);
         JButton searchButton = new JButton("Search");
         JButton refreshButton = new JButton("Refresh");
@@ -85,7 +86,7 @@ public class MainScreen extends JFrame {
             }
         });
 
-        // Add property change listener to the user
+        // user의 상태나, 현재 가는 음식점이 바뀔 경우 ui를 실시간으로 바꾸기 위한 리스너
         clientApp.getUser().addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -102,15 +103,17 @@ public class MainScreen extends JFrame {
         setVisible(true);
     }
 
+
+    // 유저의 상태별로 어떤 상태인지 나타낼 문자열 생성
     private String getUserStateText(int status, String restaurant) {
         String userName = clientApp.getUser().getName();
         switch (status) {
             case 0:
-                return userName + "님 어디로 갈지 고민중이시군요.";
+                return userName + " wondering where to go";
             case 1:
-                return userName + "님은 " + restaurant + "으로 가는중";
+                return userName + " is on the way to " + restaurant;
             case 2:
-                return userName + "님은 " + restaurant + "에서 식사중";
+                return userName + " is having a meal at " + restaurant;
             default:
                 return "";
         }

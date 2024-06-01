@@ -34,6 +34,8 @@ public class User implements Serializable {
         return status;
     }
 
+
+    // 실시간 업데이트를 위한 setter
     public void setRestaurant(String restaurant) {
         String oldRestaurant = this.restaurant;
         this.restaurant = restaurant;
@@ -46,6 +48,7 @@ public class User implements Serializable {
         support.firePropertyChange("status", oldStatus, status);
     }
 
+    // 변수의 변화 감지 리스너
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
         support.addPropertyChangeListener(pcl);
     }
