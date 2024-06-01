@@ -34,6 +34,10 @@ public class ClientApp {
         }
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public boolean login(String name) {
         User user = new User(name);
         try {

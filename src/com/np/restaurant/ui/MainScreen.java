@@ -11,6 +11,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 public class MainScreen extends JFrame {
@@ -31,18 +33,21 @@ public class MainScreen extends JFrame {
         restaurantPanel = new JPanel();
         mainPanel.add(new JScrollPane(restaurantPanel), BorderLayout.CENTER);
 
-        JPanel searchPanel = new JPanel();
-        searchPanel.setLayout(new GridLayout(3, 1));
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new GridLayout(4, 1));
 
+
+        JLabel userState = new JLabel(getUserStateText(clientApp.getUser().getStatus(), clientApp.getUser().getRestaurant()));
         searchField = new JTextField(20);
         JButton searchButton = new JButton("Search");
         JButton refreshButton = new JButton("Refresh");
 
-        searchPanel.add(searchField);
-        searchPanel.add(searchButton);
-        searchPanel.add(refreshButton);
+        topPanel.add(userState);
+        topPanel.add(searchField);
+        topPanel.add(searchButton);
+        topPanel.add(refreshButton);
 
-        mainPanel.add(searchPanel, BorderLayout.NORTH);
+        mainPanel.add(topPanel, BorderLayout.NORTH);
 
         JButton chattingButton = new JButton("Chatting Room");
         mainPanel.add(chattingButton, BorderLayout.SOUTH);
@@ -80,8 +85,35 @@ public class MainScreen extends JFrame {
             }
         });
 
+        // Add property change listener to the user
+        clientApp.getUser().addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if ("status".equals(evt.getPropertyName())) {
+                    userState.setText(getUserStateText((int) evt.getNewValue(), clientApp.getUser().getRestaurant()));
+                }
+                if ("restaurant".equals(evt.getPropertyName())) {
+                    userState.setText(getUserStateText(clientApp.getUser().getStatus(), (String) evt.getNewValue()));
+                }
+            }
+        });
+
         refreshRestaurants();
         setVisible(true);
+    }
+
+    private String getUserStateText(int status, String restaurant) {
+        String userName = clientApp.getUser().getName();
+        switch (status) {
+            case 0:
+                return userName + "님 어디로 갈지 고민중이시군요.";
+            case 1:
+                return userName + "님은 " + restaurant + "으로 가는중";
+            case 2:
+                return userName + "님은 " + restaurant + "에서 식사중";
+            default:
+                return "";
+        }
     }
 
     public void refreshRestaurants() {
