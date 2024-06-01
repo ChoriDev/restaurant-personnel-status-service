@@ -1,22 +1,29 @@
 package com.np.restaurant.chatting;
 
+import com.np.restaurant.Constants;
 import com.np.restaurant.ServerApp;
+import com.np.restaurant.restaurants.Restaurant;
 import com.np.restaurant.user.User;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ServerChat {
     private final User user;
     private final ObjectInputStream objectInputStream;
     private final ObjectOutputStream selfObjectOutputStream;
+    private List<Restaurant> restaurants;
 
     public ServerChat(User user, ObjectInputStream objectInputStream, ObjectOutputStream selfObjectOutputStream) {
         this.user = user;
         this.objectInputStream = objectInputStream;
         this.selfObjectOutputStream = selfObjectOutputStream;
+        this.restaurants = ServerApp.getRestaurants();
     }
 
     public void start() {
@@ -27,7 +34,9 @@ public class ServerChat {
             while ((message = (Message) objectInputStream.readObject()) != null) {
                 String content = message.getContent();
                 System.out.println(user.getName() + ": " + content);
-                if ("quit".equals(content)) {
+                if (content.startsWith("interest:")) {
+                    handleInterestMessage(content.substring(9));
+                } else if ("quit".equals(content)) {
                     sendQuit(message);
                     break;
                 } else if (content.startsWith("/to")) {
@@ -38,6 +47,26 @@ public class ServerChat {
             }
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error in ServerChat: " + e.getMessage());
+        }
+    }
+
+    private void handleInterestMessage(String restaurantName) {
+        for (Restaurant restaurant : restaurants) {
+            if (restaurant.getName().equals(restaurantName)) {
+                // 관심도 1 증가시키는 코드
+                restaurant.incrementInterest();
+                System.out.println("레스토랑 관심도 증가: " + restaurantName);
+
+                // 일정 시간 후 관심도 1 감소시키는 타이머 설정
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        restaurant.decrementInterest();
+                        System.out.println("레스토랑 관심도 감소: " + restaurantName);
+                    }
+                }, Constants.INTEREST_MAINTAIN_IN_MILLIS); // 10분 후 실행
+            }
         }
     }
 

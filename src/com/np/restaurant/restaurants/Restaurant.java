@@ -15,6 +15,7 @@ public class Restaurant implements Serializable {
     private String seatNum;
     private int goingPeopleCount;
     private int eatingPeopleCount;
+    private int interestCount;
 
     public Restaurant(String category, String name, String day, String operationTime, String breakTime,
             String seatNum) {
@@ -26,6 +27,7 @@ public class Restaurant implements Serializable {
         this.seatNum = seatNum;
         this.goingPeopleCount = 0;
         this.eatingPeopleCount = 0;
+        this.interestCount = 0;
     }
 
     public String getCategory() {
@@ -81,5 +83,18 @@ public class Restaurant implements Serializable {
                     .filter(restaurant -> restaurant.getName().equals(name))
                     .findFirst()
                     .orElse(null);
+    }
+
+    public void incrementInterest() {
+        this.interestCount++;
+    }
+
+    public void decrementInterest() {
+        if (this.interestCount > 0) {
+            this.interestCount--;
+        }
+    }
+    public int getInterestCount() {
+        return interestCount;
     }
 }

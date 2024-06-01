@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.np.restaurant.chatting.ServerChat;
 import com.np.restaurant.restaurants.Restaurant;
@@ -87,9 +88,22 @@ class ClientThread extends Thread {
                 sendSuccessFlag(true);
                 this.user = user;
                 ServerApp.addUser(user);
+                sendRestaurantNameList(); // 로그인 성공 시 레스토랑 목록 전송
+
             }
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("로그인 오류: " + e.getMessage());
+        }
+    }
+
+    private void sendRestaurantNameList() {
+        try {
+            List<String> restaurantNames = ServerApp.getRestaurants().stream()
+                    .map(Restaurant::getName)
+                    .collect(Collectors.toList());
+            sendObject(restaurantNames);
+        } catch (IOException e) {
+            System.err.println("레스토랑 목록 전송 오류: " + e.getMessage());
         }
     }
 

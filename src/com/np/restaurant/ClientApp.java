@@ -12,7 +12,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.stream.Collectors;
 
 public class ClientApp {
     private Socket socket;
@@ -21,6 +25,8 @@ public class ClientApp {
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
     private User user;
+    private List<String> favoriteRestaurantNameList;
+    private List<String> restaurantNameList;
 
     public ClientApp() {
         try {
@@ -29,6 +35,8 @@ public class ClientApp {
             out = socket.getOutputStream();
             objectOutputStream = new ObjectOutputStream(out);
             objectInputStream = new ObjectInputStream(in);
+            favoriteRestaurantNameList = new ArrayList<>();
+            restaurantNameList = new ArrayList<>();
         } catch (IOException e) {
             System.err.println("클라이언트 초기화 오류: " + e.getMessage());
         }
@@ -49,8 +57,11 @@ public class ClientApp {
             SuccessFlag successFlag = (SuccessFlag) objectInputStream.readObject();
             if (successFlag.getFlag()) {
                 this.user = user;
+                restaurantNameList = (List<String>) objectInputStream.readObject(); // 로그인 성공 시 레스토랑 목록 수신
+                System.out.println("레스토랑 목록 수신: " + restaurantNameList);
                 return true;
             }
+
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("로그인 오류: " + e.getMessage());
         }
@@ -104,9 +115,43 @@ public class ClientApp {
             objectOutputStream.writeObject(message);
             objectOutputStream.flush();
             objectOutputStream.reset();
+
+            interest(content);
         } catch (IOException e) {
             System.err.println("채팅 메시지 전송 오류: " + e.getMessage());
         }
+    }
+
+    private void interest(String content) {
+        for (String restaurantName : restaurantNameList) {
+            if (content.contains(restaurantName) && !favoriteRestaurantNameList.contains(restaurantName)) {
+                favoriteRestaurantNameList.add(restaurantName);
+                System.out.println("레스토랑 이름 추가: " + restaurantName);
+
+                // 10분 후에 레스토랑 이름을 삭제하는 타이머 설정
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        favoriteRestaurantNameList.remove(restaurantName);
+                        System.out.println("레스토랑 이름 삭제: " + restaurantName);
+                    }
+                }, Constants.INTEREST_MAINTAIN_IN_MILLIS); // 10분 후 실행
+
+                // 서버로 관심 레스토랑 전송
+                try {
+                    objectOutputStream.writeObject(new Message(user, null, "interest:" + restaurantName));
+                    objectOutputStream.flush();
+                    objectOutputStream.reset();
+                } catch (IOException e) {
+                    System.err.println("서버로 관심 레스토랑 전송 오류: " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    public List<String> favoriteRestaurantNameList() {
+        return favoriteRestaurantNameList;
     }
 
     public Message receiveChatMessage() throws IOException, ClassNotFoundException {
