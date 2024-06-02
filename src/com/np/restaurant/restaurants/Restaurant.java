@@ -1,6 +1,9 @@
 package com.np.restaurant.restaurants;
 
+import com.np.restaurant.user.PeopleDelta;
+
 import java.io.Serializable;
+import java.util.List;
 
 public class Restaurant implements Serializable {
     private String category;
@@ -67,8 +70,15 @@ public class Restaurant implements Serializable {
                 + eatingPeopleCount;
     }
 
-    public void changePeopleInfo(int goingDelta, int eatingDelta) {
-        this.goingPeopleCount += goingDelta;
-        this.eatingPeopleCount += eatingDelta;
+    public void changePeopleInfo(PeopleDelta peopleDelta) {
+        this.goingPeopleCount += peopleDelta.getGoingPeopleDelta();
+        this.eatingPeopleCount += peopleDelta.getEatingPeopleDelta();
+    }
+
+    public static Restaurant findRestaurantByName(List<Restaurant> restaurants, String name) {
+        return restaurants.stream()
+                .filter(restaurant -> restaurant.getName().equals(name))
+                .findFirst()
+                .orElse(null);
     }
 }

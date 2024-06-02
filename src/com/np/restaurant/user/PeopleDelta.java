@@ -4,7 +4,8 @@ import java.io.Serializable;
 
 // 음식점 인원 정보 변경을 위한 클래스
 public class PeopleDelta implements Serializable {
-    public PeopleDelta(int goingPeopleDelta, int eatingPeopleDelta) {
+    public PeopleDelta(String restaurantName, int goingPeopleDelta, int eatingPeopleDelta) {
+        this.restaurantName = restaurantName;
         this.goingPeopleDelta = goingPeopleDelta;
         this.eatingPeopleDelta = eatingPeopleDelta;
     }
@@ -17,6 +18,11 @@ public class PeopleDelta implements Serializable {
         return eatingPeopleDelta;
     }
 
+    public String getRestaurantName() {
+        return restaurantName;
+    }
+
+    private String restaurantName;
     private int goingPeopleDelta;
     private int eatingPeopleDelta;
 
