@@ -2,6 +2,8 @@ package com.np.restaurant.restaurants;
 
 import com.np.restaurant.user.PeopleDelta;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +19,8 @@ public class Restaurant implements Serializable {
     private int eatingPeopleCount;
     private int interestCount;
 
+    private PropertyChangeSupport support;
+
     public Restaurant(String category, String name, String day, String operationTime, String breakTime,
             String seatNum) {
         this.category = category;
@@ -28,6 +32,7 @@ public class Restaurant implements Serializable {
         this.goingPeopleCount = 0;
         this.eatingPeopleCount = 0;
         this.interestCount = 0;
+        this.support = new PropertyChangeSupport(this);
     }
 
     public String getCategory() {
@@ -62,6 +67,10 @@ public class Restaurant implements Serializable {
         return eatingPeopleCount;
     }
 
+    public int getInterestCount() {
+        return interestCount;
+    }
+
     public String toString() {
         return category + ", "
                 + name + ", "
@@ -85,16 +94,27 @@ public class Restaurant implements Serializable {
                     .orElse(null);
     }
 
+    public void setInterestCount(int interestCount) {
+        int oldInterestCount = this.interestCount;
+        this.interestCount = interestCount;
+        support.firePropertyChange("interestCount", oldInterestCount, interestCount);
+    }
+
     public void incrementInterest() {
-        this.interestCount++;
+        setInterestCount(this.interestCount + 1);
     }
 
     public void decrementInterest() {
         if (this.interestCount > 0) {
-            this.interestCount--;
+            setInterestCount(this.interestCount - 1);
         }
     }
-    public int getInterestCount() {
-        return interestCount;
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        support.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        support.removePropertyChangeListener(listener);
     }
 }

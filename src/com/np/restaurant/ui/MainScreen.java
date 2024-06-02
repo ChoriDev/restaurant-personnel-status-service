@@ -143,6 +143,7 @@ public class MainScreen extends JFrame {
         restaurantPanel.setLayout(new GridLayout(restaurants.size() * 3, 1));
 
         for (Restaurant restaurant : restaurants) {
+
             JPanel tempPanel = new JPanel(new BorderLayout());
             JLabel nameLabel = new JLabel(restaurant.getName());
             tempPanel.add(nameLabel, BorderLayout.WEST);
@@ -153,7 +154,7 @@ public class MainScreen extends JFrame {
             JLabel goingNum = new JLabel("Going : " + restaurant.getGoingPeopleCount());
             JLabel eatingNum = new JLabel(
                     "Eating : " + restaurant.getEatingPeopleCount() + " / " + restaurant.getSeatNum());
-            JLabel recommendNum = new JLabel("Recommend : recommend Count");
+            JLabel recommendNum = new JLabel("Recommend : " + restaurant.getInterestCount() );
 
             buttonPanel.add(Box.createHorizontalGlue());
             buttonPanel.add(goingNum);
@@ -162,6 +163,17 @@ public class MainScreen extends JFrame {
             buttonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
             buttonPanel.add(recommendNum);
             buttonPanel.add(Box.createHorizontalGlue());
+
+//            restaurant.addPropertyChangeListener(new PropertyChangeListener() {
+//                @Override
+//                public void propertyChange(PropertyChangeEvent evt) {
+//                    System.out.println(evt);
+//                    if ("interestCount".equals(evt.getPropertyName())) {
+//                        int newInterestCount = (Integer) evt.getNewValue();
+//                        recommendNum.setText("Recommend : " + String.valueOf(newInterestCount));
+//                    }
+//                }
+//            });
 
             tempPanel.addMouseListener(new MouseAdapter() {
                 @Override

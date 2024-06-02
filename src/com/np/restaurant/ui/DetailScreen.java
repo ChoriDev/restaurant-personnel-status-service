@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class DetailScreen extends JFrame {
+    public static final int  AVERAGE_EATING_TIME = 30;
 
     public DetailScreen(ClientApp clientApp, Restaurant restaurant, MainScreen mainScreen) { // 각 레스토랑에 해당하는 상세페이지
         setTitle("Restaurant: " + restaurant.getName());
@@ -62,11 +63,26 @@ public class DetailScreen extends JFrame {
 
         mainPanel.add(Box.createVerticalStrut(10));
 
-        JButton recommendButton = new JButton("Recommend");
-        recommendButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        // recommendButton action listener 추가 가능
-        mainPanel.add(recommendButton);
+        JLabel waitingTimeLabel = new JLabel("Estimated wait time: " + estimatedWaitTime(restaurant) + " minute");
+        waitingTimeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainPanel.add(waitingTimeLabel);
 
         add(mainPanel, BorderLayout.CENTER);
+    }
+
+    // 예상 대기시간 로직
+    public String estimatedWaitTime(Restaurant restaurant) {
+        int interestCount = restaurant.getInterestCount();
+        int seatNum = Integer.parseInt(restaurant.getSeatNum().trim());
+        int goingCount = restaurant.getGoingPeopleCount();
+        int eatingCount = restaurant.getEatingPeopleCount();
+
+        if(eatingCount + goingCount < seatNum){
+            return "0";
+        } else {
+            int turnoverTime = AVERAGE_EATING_TIME / seatNum;
+            int estimatedTime = (goingCount + eatingCount - seatNum + interestCount/2) * turnoverTime;
+            return String.valueOf(estimatedTime);
+        }
     }
 }
