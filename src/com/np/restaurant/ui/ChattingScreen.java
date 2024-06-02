@@ -15,11 +15,9 @@ public class ChattingScreen extends JFrame {
     private final JTextArea chatArea;
     private final JTextField inputField;
     private final ClientApp clientApp;
-    private final JFrame mainScreen;
 
-    public ChattingScreen(ClientApp clientApp, JFrame mainScreen) {
+    public ChattingScreen(ClientApp clientApp, MainScreen mainScreen) {
         this.clientApp = clientApp;
-        this.mainScreen = mainScreen;
 
         setTitle("Chatting Room");
         setSize(500, 500);
@@ -47,7 +45,7 @@ public class ChattingScreen extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                quitChattingRoom();
+                quitChattingRoom(mainScreen);
             }
         });
 
@@ -62,7 +60,7 @@ public class ChattingScreen extends JFrame {
 
         new Thread(() -> {
             try {
-                receiveMessages();
+                receiveMessages(mainScreen);
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -77,11 +75,12 @@ public class ChattingScreen extends JFrame {
         }
     }
 
-    private void receiveMessages() throws IOException, ClassNotFoundException {
+    private void receiveMessages(MainScreen mainScreen) throws IOException, ClassNotFoundException {
         while (true) {
             Message message = clientApp.receiveChatMessage();
             String content = message.getContent();
             if (content.equals("quit")) {
+                mainScreen.refreshRestaurants();
                 break;
             }
             if (content != null) {
@@ -98,7 +97,7 @@ public class ChattingScreen extends JFrame {
         }
     }
 
-    private void quitChattingRoom() {
+    private void quitChattingRoom(MainScreen mainScreen) {
         int response = JOptionPane.showConfirmDialog(this, "Do you really want to leave?", "Confirming",
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (response == JOptionPane.YES_OPTION) {

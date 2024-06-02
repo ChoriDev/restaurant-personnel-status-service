@@ -37,7 +37,8 @@ public class MainScreen extends JFrame {
         topPanel.setLayout(new GridLayout(4, 1));
 
         // 가장 위에 현재 유저의 상태를 나타냄
-        JLabel userState = new JLabel(getUserStateText(clientApp.getUser().getStatus(), clientApp.getUser().getRestaurant()));
+        JLabel userState = new JLabel(
+                getUserStateText(clientApp.getUser().getStatus(), clientApp.getUser().getRestaurant()));
         userState.setHorizontalAlignment(SwingConstants.CENTER);
         searchField = new JTextField(20);
         JButton searchButton = new JButton("Search");
@@ -103,7 +104,6 @@ public class MainScreen extends JFrame {
         setVisible(true);
     }
 
-
     // 유저의 상태별로 어떤 상태인지 나타낼 문자열 생성
     private String getUserStateText(int status, String restaurant) {
         String userName = clientApp.getUser().getName();
@@ -154,7 +154,7 @@ public class MainScreen extends JFrame {
             JLabel goingNum = new JLabel("Going : " + restaurant.getGoingPeopleCount());
             JLabel eatingNum = new JLabel(
                     "Eating : " + restaurant.getEatingPeopleCount() + " / " + restaurant.getSeatNum());
-            JLabel recommendNum = new JLabel("Recommend : " + restaurant.getInterestCount() );
+            JLabel recommendNum = new JLabel("Recommend : " + restaurant.getInterestCount());
 
             buttonPanel.add(Box.createHorizontalGlue());
             buttonPanel.add(goingNum);
@@ -164,16 +164,16 @@ public class MainScreen extends JFrame {
             buttonPanel.add(recommendNum);
             buttonPanel.add(Box.createHorizontalGlue());
 
-//            restaurant.addPropertyChangeListener(new PropertyChangeListener() {
-//                @Override
-//                public void propertyChange(PropertyChangeEvent evt) {
-//                    System.out.println(evt);
-//                    if ("interestCount".equals(evt.getPropertyName())) {
-//                        int newInterestCount = (Integer) evt.getNewValue();
-//                        recommendNum.setText("Recommend : " + String.valueOf(newInterestCount));
-//                    }
-//                }
-//            });
+            // restaurant.addPropertyChangeListener(new PropertyChangeListener() {
+            // @Override
+            // public void propertyChange(PropertyChangeEvent evt) {
+            // System.out.println(evt);
+            // if ("interestCount".equals(evt.getPropertyName())) {
+            // int newInterestCount = (Integer) evt.getNewValue();
+            // recommendNum.setText("Recommend : " + String.valueOf(newInterestCount));
+            // }
+            // }
+            // });
 
             tempPanel.addMouseListener(new MouseAdapter() {
                 @Override
