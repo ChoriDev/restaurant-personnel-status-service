@@ -17,7 +17,7 @@ import com.np.restaurant.user.User;
 public class ServerApp {
     private static final List<User> loggedInUsers = new ArrayList<>();
     private static final HashMap<User, ObjectOutputStream> chattingUsers = new HashMap<>();
-    private static final List<Restaurant> restaurants = new Restaurants().getRestaurants();
+    private static final List<Restaurant> restaurants = Restaurants.getRestaurants();
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(10001)) {

@@ -5,7 +5,6 @@ import com.np.restaurant.user.PeopleDelta;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 
 public class Restaurant implements Serializable {
@@ -89,9 +88,9 @@ public class Restaurant implements Serializable {
 
     public static Restaurant findRestaurantByName(List<Restaurant> restaurants, String name) {
         return restaurants.stream()
-                    .filter(restaurant -> restaurant.getName().equals(name))
-                    .findFirst()
-                    .orElse(null);
+                .filter(restaurant -> restaurant.getName().equals(name))
+                .findFirst()
+                .orElse(null);
     }
 
     public void setInterestCount(int interestCount) {

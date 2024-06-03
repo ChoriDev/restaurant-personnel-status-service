@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.stream.Collectors;
 
 public class ClientApp {
     private Socket socket;
@@ -81,6 +80,7 @@ public class ClientApp {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public List<Restaurant> fetchRestaurants() {
         try {
             sendCommand("음식점 조회");
@@ -178,7 +178,7 @@ public class ClientApp {
             prevRestaurantName = user.getRestaurant();
             System.out.println("상태: " + prevStatus + " -> " + newStatus);
             System.out.println("음식점: " + prevRestaurantName + " -> " + newRestaurantName);
-            
+
             // 음식점 변경여부 확인
             if (prevStatus == User.DEFAULT || newRestaurantName.equals(prevRestaurantName))
                 hasRestaurantChanged = false;
@@ -210,8 +210,7 @@ public class ClientApp {
                 } else if (prevStatus == User.EATING && newStatus == User.EATING) {
                     objectOutputStream.writeObject(new PeopleDelta(newRestaurantName, 0, -1));
                 }
-            }
-            else { // 음식점 변화
+            } else { // 음식점 변화
                 if (prevStatus == User.GOING && newStatus == User.GOING) {
                     objectOutputStream.writeObject(new PeopleDelta(prevRestaurantName, -1, 0));
                     objectOutputStream.writeObject(new PeopleDelta(newRestaurantName, 1, 0));
