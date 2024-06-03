@@ -154,7 +154,7 @@ public class MainScreen extends JFrame {
             JLabel goingNum = new JLabel("Going : " + restaurant.getGoingPeopleCount());
             JLabel eatingNum = new JLabel(
                     "Eating : " + restaurant.getEatingPeopleCount() + " / " + restaurant.getSeatNum());
-            JLabel recommendNum = new JLabel("Recommend : " + restaurant.getInterestCount());
+            JLabel recommendNum = new JLabel("Interested : " + restaurant.getInterestCount());
 
             buttonPanel.add(Box.createHorizontalGlue());
             buttonPanel.add(goingNum);
