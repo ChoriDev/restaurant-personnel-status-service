@@ -1,8 +1,6 @@
 package com.np.restaurant;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -25,14 +23,12 @@ class ClientThread extends Thread {
     private static final String TERMINATE = "종료";
 
     private final Socket clientSocket;
-    private final BufferedReader reader;
     private final ObjectInputStream objectInputStream;
     private final ObjectOutputStream objectOutputStream;
     private User user;
 
     public ClientThread(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
-        this.reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         this.objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
         this.objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
     }
@@ -87,7 +83,6 @@ class ClientThread extends Thread {
                 this.user = user;
                 ServerApp.addUser(user);
                 sendRestaurantNameList(); // 로그인 성공 시 레스토랑 목록 전송
-
             }
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("로그인 오류: " + e.getMessage());
@@ -128,9 +123,6 @@ class ClientThread extends Thread {
     private void people() {
         List<Restaurant> restaurants = ServerApp.getRestaurants();
         Boolean hasRestaurantChanged = false;
-        String restaurantName = null;
-        String status = null;
-        Restaurant restaurantObject = null;
         PeopleDelta peopleDelta = null;
 
         try {
@@ -194,8 +186,6 @@ class ClientThread extends Thread {
 
     private void cleanup() {
         try {
-            if (reader != null)
-                reader.close();
             if (objectInputStream != null)
                 objectInputStream.close();
             if (objectOutputStream != null)
